@@ -22,5 +22,7 @@ else
         echo "$changed_files"
         # "Add all changed files?" 
         # read -p "Enter Y to add, N to exit: " addFiles
+    else
+        echo "All local files up to date."
     fi
 fi
