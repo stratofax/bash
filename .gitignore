@@ -1,0 +1,4 @@
+*.cfg
+*.tmp
+*.log
+*.cache
