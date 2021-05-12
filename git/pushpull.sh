@@ -18,8 +18,9 @@ if [ $E_STATUS -ne 0 ]; then
     echo "Error $E_STATUS - update cancelled."
     exit $E_STATUS
 else
-    echo "$changed_files"
-    echo "Add all changed files?" 
-    read -p "Enter Y to add, N to exit: " addFiles
+    if [ $#changed_files ]; then
+        echo "$changed_files"
+        # "Add all changed files?" 
+        # read -p "Enter Y to add, N to exit: " addFiles
+    fi
 fi
-
