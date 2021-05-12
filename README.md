@@ -2,6 +2,17 @@
 
 Cross-platform bash scripts for Linux, Mac, and Windows computers.
 
+## bash style guide
+
+To keep things consistent, I use the [Unofficial Shell Scripting Stylesheet](https://tldp.org/LDP/abs/html/unofficialst.html).
+
+### Naming Things
+
+* `variable_name` -- lower case, underscore to separate words.
+* `CONSTANT_NAME` -- a variable that you won't change (note that bash does not enforce this)
+* `E_ERROR_CODE` -- an error code (constant): prefix with "E_"
+* `FunctionName` -- Use Upper Case, no spaces
+
 ## Why bash?
 
 The Bourne Again Shell (bash) is installed by default on almost every Linux distro, all Macs, and is even available on Windows. It's also available on most commercial Unix installations. This means bash is the closest thing there is to a universal shell. 
