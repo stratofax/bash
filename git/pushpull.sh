@@ -2,14 +2,6 @@
 
 echo "Attemping to push and pull changes in directory:"
 pwd
-echo "Pulling the latest changes using rebase ..."
-git pull --rebase
-E_PULL=$?
-# if it's not zero, it's an error
-if [ $E_PULL -ne 0 ]; then
-    echo "Error $E_PULL - update cancelled."
-    exit $E_PULL
-fi
 echo "Checking for local changes to push ..."
 changed_files=$(git status -s)
 E_STATUS=$?
@@ -25,4 +17,13 @@ else
     else
         echo "All local files up to date."
     fi
+fi
+
+echo "Pulling the latest changes using rebase ..."
+git pull --rebase
+E_PULL=$?
+# if it's not zero, it's an error
+if [ $E_PULL -ne 0 ]; then
+    echo "Error $E_PULL - update cancelled."
+    exit $E_PULL
 fi
