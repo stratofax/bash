@@ -16,30 +16,37 @@ E_NO_DAYLOG=103
 EXIT_MSG="Script terminated."
 CONFIG_FILE="daylog.cfg"
 
-
 if [ ! -f $CONFIG_FILE ]; then
     echo "Configuration file $CONFIG_FILE not found."
-    echo $EXIT_MSG
-    exit $E_NO_CONFIG
+    echo "Using default configuration settings."
+    # set default values
+    # DO NOT enclose the tilde character ("~") in quotes (double or single)
+    # as this prevents path expansion. To specify a directory name with 
+    # spaces, add the quotes AFTER the tidle, like this:
+    # ~/'some path/with spaces/in it'
+    repo_dir=~/'repos/writing/'
+    daylog_dir=~/'repos/writing/daylogs/'
+    EDITOR_APP="gvim"
+else
+    source $CONFIG_FILE
 fi
-source $CONFIG_FILE
 
-# Check for repository directory
+# Check for daylog directory
 # Remove trailing slash
-DAYLOG_DIR="${DAYLOG_DIR%/}"
-if [ ! -d $DAYLOG_DIR ]; then
+daylog_dir=${daylog_dir%/}
+if [ ! -d $daylog_dir ]; then
     echo "Daylog directory not found:"
-    echo $DAYLOG_DIR
+    echo $daylog_dir
     echo $EXIT_MSG
     exit $E_NO_REPO
 fi
 
 # Check for repository directory
 # Remove trailing slash
-REPO_DIR="${REPO_DIR%/}"
-if [ ! -d $REPO_DIR ]; then
+repo_dir=${repo_dir%/}
+if [ ! -d $repo_dir ]; then
     echo "Repository directory not found:"
-    echo $REPO_DIR
+    echo $repo_dir
     echo $EXIT_MSG
     exit $E_NO_DAYLOG
 fi
@@ -47,9 +54,9 @@ fi
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
 
 echo "Create a new daylog file, $DAYLOG_NAME, in directory:"
-echo "$DAYLOG_DIR; then edit with $EDITOR_APP."
+echo "$daylog_dir; then edit with $EDITOR_APP."
 
-cd "$REPO_DIR"
+cd "$repo_dir"
 echo "Working in repository:"
 pwd
 echo "Pulling the latest changes using rebase ..."
@@ -64,7 +71,7 @@ if [ $E_PULL -ne 0 ]; then
 fi
 # Append an H2 timestamp to the file
 TIME_STAMP="## $(date +%H:%M)"
-PATH_FILE="$DAYLOG_DIR/$DAYLOG_NAME"
+PATH_FILE="$daylog_dir/$DAYLOG_NAME"
 echo "Appending time stamp to log file ..."
 echo $TIME_STAMP >> $PATH_FILE
 echo "File updated, now opening with $EDITOR_APP ..."
