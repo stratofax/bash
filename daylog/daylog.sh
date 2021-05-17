@@ -2,6 +2,7 @@
 # daylog.sh creates a file in the specified directory 
 # and opens it with your favorite editor
 
+# what script is running?
 echo $(basename $0)
 #######################################
 # Set up constants
@@ -53,23 +54,27 @@ fi
 
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
 
-echo "Create a new daylog file, $DAYLOG_NAME, in directory:"
-echo "$daylog_dir; then edit with $EDITOR_APP."
+# What this script is going to do now
+echo "Create a new daylog file, $DAYLOG_NAME, if needed,"
+echo "in directory: $daylog_dir;" 
+echo "then edit with $EDITOR_APP."
 
+# Before we make any changes to the local repo, pull updates
 cd "$repo_dir"
 echo "Working in repository:"
 pwd
-echo "Pulling the latest changes using rebase ..."
+echo "Pulling the latest changes with rebase ..."
 git pull --rebase
 E_PULL=$?
-# if it's not zero, it's an error
+# if it's not zero, there's a problem with the pull 
 if [ $E_PULL -ne 0 ]; then
-    # ask to continue
     echo "Error pulling from repository."
+    # TODO: ask to continue
     echo $EXIT_MSG
     exit $E_PULL
 fi
-# Append an H2 timestamp to the file
+
+# Append an H2 timestamp to today's daylog file
 TIME_STAMP="## $(date +%H:%M)"
 PATH_FILE="$daylog_dir/$DAYLOG_NAME"
 echo "Appending time stamp to log file ..."
