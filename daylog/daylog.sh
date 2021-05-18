@@ -16,8 +16,9 @@ E_NO_DAYLOG=103
 # Strings and filenames
 EXIT_MSG="Script terminated."
 CONFIG_FILE="daylog.cfg"
+CONFIG_PATH=~/'.config/daylog'
 
-if [ ! -f $CONFIG_FILE ]; then
+if [ ! -f $CONFIG_PATH/$CONFIG_FILE ]; then
     echo "Configuration file $CONFIG_FILE not found."
     echo "Using default configuration settings."
     # set default values
