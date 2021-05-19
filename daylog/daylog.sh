@@ -86,6 +86,6 @@ echo "Edits completed. $E_EDITED"
 # stage and push to git
 # TODO: git status check for changes
 git add $PATH_FILE
-git_msg="Update by daylog.sh"
+git_msg="Daily log file update by daylog.sh"
 git commit -m "$git_msg"
 git push
