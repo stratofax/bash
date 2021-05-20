@@ -17,8 +17,8 @@ E_NO_DAYLOG=103
 EXIT_MSG="Script terminated."
 CONFIG_FILE="daylog.cfg"
 CONFIG_PATH=~/'.config/daylog'
-
-if [ ! -f $CONFIG_PATH/$CONFIG_FILE ]; then
+CONFIG_HERE=$CONFIG_PATH/$CONFIG_FILE 
+if [ ! -f $CONFIG_HERE ]; then
     echo "Configuration file $CONFIG_FILE not found."
     echo "Using default configuration settings."
     # set default values
@@ -30,7 +30,7 @@ if [ ! -f $CONFIG_PATH/$CONFIG_FILE ]; then
     daylog_dir=~/'repos/writing/daylogs/'
     EDITOR_APP="gvim"
 else
-    source $CONFIG_FILE
+    source $CONFIG_HERE
 fi
 
 # Check for daylog directory
