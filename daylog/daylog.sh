@@ -18,6 +18,8 @@ EXIT_MSG="Script terminated."
 CONFIG_FILE="daylog.cfg"
 CONFIG_PATH=~/'.config/daylog'
 CONFIG_HERE=$CONFIG_PATH/$CONFIG_FILE 
+
+# Check for external config file
 if [ ! -f $CONFIG_HERE ]; then
     echo "Configuration file $CONFIG_FILE not found."
     echo "Using default configuration settings."
@@ -34,7 +36,7 @@ else
 fi
 
 # Check for daylog directory
-# Remove trailing slash
+## Remove trailing slash
 daylog_dir=${daylog_dir%/}
 if [ ! -d $daylog_dir ]; then
     echo "Daylog directory not found:"
@@ -44,7 +46,7 @@ if [ ! -d $daylog_dir ]; then
 fi
 
 # Check for repository directory
-# Remove trailing slash
+## Remove trailing slash
 repo_dir=${repo_dir%/}
 if [ ! -d $repo_dir ]; then
     echo "Repository directory not found:"
@@ -53,7 +55,10 @@ if [ ! -d $repo_dir ]; then
     exit $E_NO_DAYLOG
 fi
 
+# Strings: filename for today's daylog, full path, time stamp
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
+PATH_FILE="$daylog_dir/$DAYLOG_NAME"
+TIME_STAMP="## $(date +%H:%M)"
 
 # What this script is going to do now
 echo "Create a new daylog file, $DAYLOG_NAME, if needed,"
@@ -76,14 +81,15 @@ if [ $E_PULL -ne 0 ]; then
 fi
 
 # Append an H2 timestamp to today's daylog file
-TIME_STAMP="## $(date +%H:%M)"
-PATH_FILE="$daylog_dir/$DAYLOG_NAME"
 echo "Appending time stamp to log file ..."
 echo $TIME_STAMP >> $PATH_FILE
 echo "File updated, now opening with $EDITOR_APP ..."
+
+# Open today's daylog in the specified editor
 E_EDITED=$("$EDITOR_APP" "$PATH_FILE")
 WORD_COUNT=$(wc -w $PATH_FILE | awk '{print $1}')
 echo "Edits complete: $WORD_COUNT words saved."
+
 # stage and push to git
 # TODO: git status check for changes
 git add $PATH_FILE
