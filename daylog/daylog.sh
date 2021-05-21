@@ -82,7 +82,8 @@ echo "Appending time stamp to log file ..."
 echo $TIME_STAMP >> $PATH_FILE
 echo "File updated, now opening with $EDITOR_APP ..."
 E_EDITED=$("$EDITOR_APP" "$PATH_FILE")
-echo "Edits completed. $E_EDITED"
+WORD_COUNT=$(wc -w $PATH_FILE | awk '{print $1}')
+echo "Edits complete: $WORD_COUNT words saved."
 # stage and push to git
 # TODO: git status check for changes
 git add $PATH_FILE
