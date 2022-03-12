@@ -11,8 +11,9 @@ basename "$0"
 # Error codes
 E_NO_REPO=102
 E_NO_DAYLOG=103
+E_UNKNOWN_KERNEL=104
 
-# Strings and filenames
+# Strings and filename constants
 EXIT_MSG="Script terminated."
 CONFIG_FILE="daylog.cfg"
 CONFIG_PATH=~/'.config/daylog'
@@ -58,10 +59,17 @@ fi
 
 # Strings: filename for today's daylog, full path, time stamp
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
-PATH_FILE="$daylog_dir/$DAYLOG_NAME"
+PATH_TO_LOG="$daylog_dir/$DAYLOG_NAME"
+add_lines=""
 
-# What this script is going to do now
-echo "Create a new daylog file, $DAYLOG_NAME, if needed,"
+# does the file already exist?
+if [ ! -f "$PATH_TO_LOG" ]; then
+    doing_what="Create a new"
+    add_lines="# $(date +%Y-%m-%d)"
+else
+    doing_what="Edit existing"
+fi
+echo "$doing_what daylog file, $DAYLOG_NAME" 
 echo "in directory: $daylog_dir;" 
 echo "then edit with $EDITOR_APP."
 
@@ -83,34 +91,46 @@ fi
 # Append an H2 timestamp to today's daylog file
 echo "Appending time stamp to log file ..."
 TIME_STAMP=$(date +%H:%M)
-printf "\n\n## %s" "$TIME_STAMP" >> "$PATH_FILE"
-# echo "$TIME_STAMP" >> "$PATH_FILE"
-echo "File updated, now opening with $EDITOR_APP ..."
+printf "%s\n\n## %s" "$add_lines" "$TIME_STAMP" >> "$PATH_TO_LOG"
+# echo "$TIME_STAMP" >> "$PATH_TO_LOG"
+echo "File updated, using $EDITOR_APP to edit log file:"
+echo "$PATH_TO_LOG ..."
 
 # Open today's daylog in the specified editor
 # Store command result code or the script will continue
-E_EDITED=$("$EDITOR_APP" "$PATH_FILE")
+E_EDITED=$("$EDITOR_APP" "$PATH_TO_LOG")
 printf "Return value: %s\n" "$E_EDITED"
 
 # the script resumes here after you quit the editor
-WORD_COUNT=$(wc -w "$PATH_FILE" | awk '{print $1}')
+WORD_COUNT=$(wc -w "$PATH_TO_LOG" | awk '{print $1}')
 echo "Edits complete: $WORD_COUNT words saved."
 
 # Detect platform and copy file to clipboard
 
 KERNEL_NAME=$(uname --kernel-name)
+echo "Kernel detected: $KERNEL_NAME" 
+echo "Copying $DAYLOG_NAME to system clipboard ..."
 case $KERNEL_NAME in
     Linux*) 
-        echo "Kernel is $KERNEL_NAME" 
+        xclip -selection clipboard -in "$PATH_TO_LOG"
+        E_CLIP=$?
         ;;
     *)      
-        echo "Unknown kernel: $KERNEL_NAME" 
+        echo "Unknown kernel, file not copied"
+        E_CLIP=$E_UNKNOWN_KERNEL
         ;;
 esac
 
+if [ $E_CLIP -ne 0 ]; then
+    echo "Error $E_CLIP copying file to clipboard."
+    echo "$DAYLOG_NAME not copied."
+else
+    echo "Success! $DAYLOG_NAME copied to system clipboard."
+fi
+
 # stage and push to git
 # TODO: git status check for changes
-git add "$PATH_FILE"
+git add "$PATH_TO_LOG"
 git_msg="Daily log file update by daylog.sh"
 git commit -m "$git_msg"
 git push
