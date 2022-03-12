@@ -31,6 +31,8 @@ if [ ! -f $CONFIG_HERE ]; then
     daylog_dir=~/'repos/writing/daylogs/'
     EDITOR_APP="gvim"
 else
+    echo "Using configuration file:" 
+    echo $CONFIG_HERE
     source $CONFIG_HERE
 fi
 
@@ -57,7 +59,6 @@ fi
 # Strings: filename for today's daylog, full path, time stamp
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
 PATH_FILE="$daylog_dir/$DAYLOG_NAME"
-TIME_STAMP="\n## $(date +%H:%M)"
 
 # What this script is going to do now
 echo "Create a new daylog file, $DAYLOG_NAME, if needed,"
@@ -81,11 +82,15 @@ if [ $E_PULL -ne 0 ]; then
 fi
 # Append an H2 timestamp to today's daylog file
 echo "Appending time stamp to log file ..."
-echo "$TIME_STAMP" >> "$PATH_FILE"
+TIME_STAMP=$(date +%H:%M)
+printf "\n\n## %s" "$TIME_STAMP" >> "$PATH_FILE"
+# echo "$TIME_STAMP" >> "$PATH_FILE"
 echo "File updated, now opening with $EDITOR_APP ..."
 
 # Open today's daylog in the specified editor
-$EDITOR_APP "$PATH_FILE"
+# Store command result code or the script will continue
+E_EDITED=$("$EDITOR_APP" "$PATH_FILE")
+printf "Return value: %s\n" "$E_EDITED"
 
 # the script resumes here after you quit the editor
 WORD_COUNT=$(wc -w "$PATH_FILE" | awk '{print $1}')
