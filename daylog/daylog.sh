@@ -3,13 +3,12 @@
 # and opens it with your favorite editor
 
 # what script is running?
-echo $(basename $0)
+basename "$0"
 #######################################
 # Set up constants
 #######################################
 # TODO: Set default values for config vars
 # Error codes
-E_NO_CONFIG=101
 E_NO_REPO=102
 E_NO_DAYLOG=103
 
@@ -41,7 +40,7 @@ daylog_dir=${daylog_dir%/}
 if [ ! -d $daylog_dir ]; then
     echo "Daylog directory not found:"
     echo $daylog_dir
-    echo $EXIT_MSG
+    echo "$EXIT_MSG"
     exit $E_NO_REPO
 fi
 
@@ -51,14 +50,14 @@ repo_dir=${repo_dir%/}
 if [ ! -d $repo_dir ]; then
     echo "Repository directory not found:"
     echo $repo_dir
-    echo $EXIT_MSG
+    echo "$EXIT_MSG"
     exit $E_NO_DAYLOG
 fi
 
 # Strings: filename for today's daylog, full path, time stamp
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
 PATH_FILE="$daylog_dir/$DAYLOG_NAME"
-TIME_STAMP="## $(date +%H:%M)"
+TIME_STAMP="\n## $(date +%H:%M)"
 
 # What this script is going to do now
 echo "Create a new daylog file, $DAYLOG_NAME, if needed,"
@@ -66,7 +65,8 @@ echo "in directory: $daylog_dir;"
 echo "then edit with $EDITOR_APP."
 
 # Before we make any changes to the local repo, pull updates
-cd "$repo_dir"
+# Ensure we can enter the repo directory
+cd "$repo_dir" || exit
 echo "Working in repository:"
 pwd
 echo "Pulling the latest changes with rebase ..."
@@ -76,23 +76,39 @@ E_PULL=$?
 if [ $E_PULL -ne 0 ]; then
     echo "Error pulling from repository."
     # TODO: ask to continue
-    echo $EXIT_MSG
+    echo "$EXIT_MSG"
     exit $E_PULL
 fi
-
 # Append an H2 timestamp to today's daylog file
 echo "Appending time stamp to log file ..."
-echo $TIME_STAMP >> $PATH_FILE
+echo "$TIME_STAMP" >> "$PATH_FILE"
 echo "File updated, now opening with $EDITOR_APP ..."
 
 # Open today's daylog in the specified editor
-E_EDITED=$("$EDITOR_APP" "$PATH_FILE")
-WORD_COUNT=$(wc -w $PATH_FILE | awk '{print $1}')
+$EDITOR_APP "$PATH_FILE"
+
+# the script resumes here after you quit the editor
+WORD_COUNT=$(wc -w "$PATH_FILE" | awk '{print $1}')
 echo "Edits complete: $WORD_COUNT words saved."
+
+# Detect platform and copy file to clipboard
+
+KERNEL_NAME=$(uname --kernel-name)
+case $KERNEL_NAME in
+    Linux*) 
+        echo "Kernel is $KERNEL_NAME" 
+        ;;
+    *)      
+        echo "Unknown kernel: $KERNEL_NAME" 
+        ;;
+esac
 
 # stage and push to git
 # TODO: git status check for changes
-git add $PATH_FILE
+git add "$PATH_FILE"
 git_msg="Daily log file update by daylog.sh"
 git commit -m "$git_msg"
 git push
+
+# if this all worked, there were no config errors
+# TODO: A good time to save the config file
