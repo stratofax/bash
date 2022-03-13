@@ -2,6 +2,11 @@
 # daylog.sh creates a file in the specified directory 
 # and opens it with your favorite editor
 
+# turn on unoffical bash strict mode
+set -euo pipefail
+IFS=$'\n\t'
+
+
 # what script is running?
 basename "$0"
 #######################################
