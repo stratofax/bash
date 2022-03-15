@@ -1,5 +1,5 @@
 #!/bin/bash
-# daylog.sh creates a file in the specified directory 
+# daylog.sh creates a file in the specified directory
 # and opens it with your favorite editor
 
 # turn on unoffical bash strict mode
@@ -22,7 +22,7 @@ E_UNKNOWN_KERNEL=104
 EXIT_MSG="Script terminated."
 CONFIG_FILE="daylog.cfg"
 CONFIG_PATH=~/'.config/daylog'
-CONFIG_HERE=$CONFIG_PATH/$CONFIG_FILE 
+CONFIG_HERE=$CONFIG_PATH/$CONFIG_FILE
 
 # Check for external config file
 if [ ! -f $CONFIG_HERE ]; then
@@ -30,14 +30,14 @@ if [ ! -f $CONFIG_HERE ]; then
     echo "Using default configuration settings."
     # set default values
     # DO NOT enclose the tilde character ("~") in quotes (double or single)
-    # as this prevents path expansion. To specify a directory name with 
+    # as this prevents path expansion. To specify a directory name with
     # spaces, add the quotes AFTER the tidle, like this:
     # ~/'some path/with spaces/in it'
     repo_dir=~/'repos/writing/'
     daylog_dir=~/'repos/writing/daylogs/'
     EDITOR_APP="gvim"
 else
-    echo "Using configuration file:" 
+    echo "Using configuration file:"
     echo $CONFIG_HERE
     source $CONFIG_HERE
 fi
@@ -62,6 +62,22 @@ if [ ! -d $repo_dir ]; then
     exit $E_NO_DAYLOG
 fi
 
+# Before we make any changes to the local repo, pull updates
+# Ensure we can enter the repo directory
+cd "$repo_dir" || exit
+echo "Working in repository:"
+pwd
+echo "Pulling the latest changes with rebase ..."
+git pull --rebase
+E_PULL=$?
+# if it's not zero, there's a problem with the pull
+if [ $E_PULL -ne 0 ]; then
+    echo "Error pulling from repository."
+    # TODO: ask to continue
+    echo "$EXIT_MSG"
+    exit $E_PULL
+fi
+
 # Strings: filename for today's daylog, full path, time stamp
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
 PATH_TO_LOG="$daylog_dir/$DAYLOG_NAME"
@@ -74,25 +90,10 @@ if [ ! -f "$PATH_TO_LOG" ]; then
 else
     doing_what="Edit existing"
 fi
-echo "$doing_what daylog file, $DAYLOG_NAME" 
-echo "in directory: $daylog_dir;" 
+echo "$doing_what daylog file, $DAYLOG_NAME"
+echo "in directory: $daylog_dir;"
 echo "then edit with $EDITOR_APP."
 
-# Before we make any changes to the local repo, pull updates
-# Ensure we can enter the repo directory
-cd "$repo_dir" || exit
-echo "Working in repository:"
-pwd
-echo "Pulling the latest changes with rebase ..."
-git pull --rebase
-E_PULL=$?
-# if it's not zero, there's a problem with the pull 
-if [ $E_PULL -ne 0 ]; then
-    echo "Error pulling from repository."
-    # TODO: ask to continue
-    echo "$EXIT_MSG"
-    exit $E_PULL
-fi
 # Append an H2 timestamp to today's daylog file
 echo "Appending time stamp to log file ..."
 TIME_STAMP=$(date +%H:%M)
@@ -112,18 +113,18 @@ echo "Edits complete: $WORD_COUNT words saved."
 
 # Detect platform and copy file to clipboard
 
-KERNEL_NAME=$(uname --kernel-name)
-echo "Kernel detected: $KERNEL_NAME" 
+KERNEL_NAME=$(uname)
+echo "Kernel detected: $KERNEL_NAME"
 echo "Copying $DAYLOG_NAME to system clipboard ..."
 case $KERNEL_NAME in
-    Linux*) 
+    Linux*)
         xclip -selection clipboard -in "$PATH_TO_LOG"
         E_CLIP=$?
-        ;;
-    *)      
+    ;;
+    *)
         echo "Unknown kernel, file not copied"
         E_CLIP=$E_UNKNOWN_KERNEL
-        ;;
+    ;;
 esac
 
 if [ $E_CLIP -ne 0 ]; then
