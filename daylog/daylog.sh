@@ -121,6 +121,9 @@ case $KERNEL_NAME in
         xclip -selection clipboard -in "$PATH_TO_LOG"
         E_CLIP=$?
     ;;
+    Darwin*)
+        cat "$PATH_TO_LOG" | pbcopy
+    ;;
     *)
         echo "Unknown kernel, file not copied"
         E_CLIP=$E_UNKNOWN_KERNEL
