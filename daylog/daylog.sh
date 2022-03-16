@@ -123,6 +123,7 @@ case $KERNEL_NAME in
     ;;
     Darwin*)
         pbcopy < "$PATH_TO_LOG"
+        E_CLIP=$?
     ;;
     *)
         echo "Unknown kernel, file not copied"
