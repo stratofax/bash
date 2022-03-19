@@ -86,7 +86,7 @@ add_lines=""
 # does the file already exist?
 if [ ! -f "$PATH_TO_LOG" ]; then
     doing_what="Create a new"
-    add_lines=printf "# %s\n" "$(date +%Y-%m-%d)"
+    add_lines=$(printf "# %s\n" "$(date +%Y-%m-%d)")
 else
     doing_what="Edit existing"
 fi
