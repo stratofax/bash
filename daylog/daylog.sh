@@ -86,7 +86,7 @@ add_lines=""
 # does the file already exist?
 if [ ! -f "$PATH_TO_LOG" ]; then
     doing_what="Create a new"
-    add_lines="# $(date +%Y-%m-%d)"
+    add_lines=printf "# %s\n" "$(date +%Y-%m-%d)"
 else
     doing_what="Edit existing"
 fi
@@ -96,8 +96,8 @@ echo "then edit with $EDITOR_APP."
 
 # Append an H2 timestamp to today's daylog file
 echo "Appending time stamp to log file ..."
-TIME_STAMP=$(date +%H:%M)
-printf "%s\n\n## %s" "$add_lines" "$TIME_STAMP" >> "$PATH_TO_LOG"
+TIME_STAMP="$(date +%H:%M)"
+printf "%s\n## %s" "$add_lines" "$TIME_STAMP" >> "$PATH_TO_LOG"
 # echo "$TIME_STAMP" >> "$PATH_TO_LOG"
 echo "File updated, using $EDITOR_APP to edit log file:"
 echo "$PATH_TO_LOG ..."
