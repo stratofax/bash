@@ -105,7 +105,8 @@ echo "$PATH_TO_LOG ..."
 # Open today's daylog in the specified editor
 # Store command result code or the script will continue
 E_EDITED=$("$EDITOR_APP" "$PATH_TO_LOG")
-printf "Return value: %s\n" "$E_EDITED"
+# printf "Return value: %s\n" "$E_EDITED"
+
 
 # the script resumes here after you quit the editor
 WORD_COUNT=$(wc -w "$PATH_TO_LOG" | awk '{print $1}')
@@ -126,15 +127,12 @@ case $KERNEL_NAME in
         E_CLIP=$?
     ;;
     *)
-        echo "Unknown kernel, file not copied"
         E_CLIP=$E_UNKNOWN_KERNEL
+        echo "Error $E_CLIP - Unknown or unsupported kernel, file not copied"
     ;;
 esac
 
-if [ $E_CLIP -ne 0 ]; then
-    echo "Error $E_CLIP copying file to clipboard."
-    echo "$DAYLOG_NAME not copied."
-else
+if [ $E_CLIP -eq 0 ]; then
     echo "Success! $DAYLOG_NAME copied to system clipboard."
 fi
 
