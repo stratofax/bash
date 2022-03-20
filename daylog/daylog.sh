@@ -6,13 +6,11 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-
 # what script is running?
 basename "$0"
 #######################################
 # Set up constants
 #######################################
-# TODO: Set default values for config vars
 # Error codes
 E_NO_REPO=102
 E_NO_DAYLOG=103
@@ -81,14 +79,15 @@ fi
 # Strings: filename for today's daylog, full path, time stamp
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
 PATH_TO_LOG="$daylog_dir/$DAYLOG_NAME"
-add_lines=""
+TIME_STAMP="$(date +%H:%M)"
 
 # does the file already exist?
 if [ ! -f "$PATH_TO_LOG" ]; then
     doing_what="Create a new"
-    add_lines=$(printf "# %s\n" "$(date +%Y-%m-%d)")
+    add_lines=$(printf "# %s\n\n## %s" "$(date +%Y-%m-%d)" "$TIME_STAMP")
 else
     doing_what="Edit existing"
+    add_lines=$(printf "\n## %s" "$TIME_STAMP")
 fi
 echo "$doing_what daylog file, $DAYLOG_NAME"
 echo "in directory: $daylog_dir;"
@@ -96,8 +95,7 @@ echo "then edit with $EDITOR_APP."
 
 # Append an H2 timestamp to today's daylog file
 echo "Appending time stamp to log file ..."
-TIME_STAMP="$(date +%H:%M)"
-printf "%s\n## %s" "$add_lines" "$TIME_STAMP" >> "$PATH_TO_LOG"
+echo  "$add_lines"  >> "$PATH_TO_LOG"
 # echo "$TIME_STAMP" >> "$PATH_TO_LOG"
 echo "File updated, using $EDITOR_APP to edit log file:"
 echo "$PATH_TO_LOG ..."
