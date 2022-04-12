@@ -1,9 +1,9 @@
 #!/bin/bash
-
+# Use "033" instead of "e" for Mac compatibility.
 # Color codes
 RESET='\033[0m'       # Text Reset
 
-BOLD="\e[1m"
+BOLD="\033[1m"
 # Regular Colors
 BLACK='\033[0;30m'        # Black
 RED='\033[0;31m'          # Red

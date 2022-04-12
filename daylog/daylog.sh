@@ -12,8 +12,9 @@ basename "$0"
 # Set up constants
 #######################################
 # Color codes
+# Use "033" instead of "e"
 RESET='\033[0m'       # Text Reset
-BOLD="\e[1m"              # bold
+BOLD="\033[1m"              # bold
 # Regular Colors
 BLACK='\033[0;30m'        # Black
 RED='\033[0;31m'          # Red
