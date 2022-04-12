@@ -100,10 +100,10 @@ if [ ! -f "$PATH_TO_LOG" ]; then
     doing_what="Create a new"
     add_lines=$(printf "# %s\n\n## %s" "$(date +%Y-%m-%d)" "$TIME_STAMP")
 else
-    doing_what="Edit existing"
+    doing_what="Update existing"
     add_lines=$(printf "\n## %s" "$TIME_STAMP")
 fi
-echo "$doing_what daylog file, $DAYLOG_NAME"
+echo -e "$doing_what daylog file, ${CYAN}${DAYLOG_NAME}${RESET}"
 echo "in directory: $daylog_dir;"
 echo "then edit with $EDITOR_APP."
 
@@ -112,7 +112,7 @@ echo "Appending time stamp to log file ..."
 echo  "$add_lines"  >> "$PATH_TO_LOG"
 # echo "$TIME_STAMP" >> "$PATH_TO_LOG"
 echo "File updated, using $EDITOR_APP to edit log file:"
-echo "$PATH_TO_LOG ..."
+echo -e "${CYAN}${PATH_TO_LOG}${RESET} ..."
 
 # Open today's daylog in the specified editor
 # Store command result code or the script will continue
@@ -145,7 +145,7 @@ case $KERNEL_NAME in
 esac
 
 if [ $E_CLIP -eq 0 ]; then
-    echo "Success! $DAYLOG_NAME copied to system clipboard."
+    echo -e "${GREEN}Success! $DAYLOG_NAME copied to system clipboard.${RESET}"
 fi
 
 # stage and push to git
