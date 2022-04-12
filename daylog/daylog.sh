@@ -11,6 +11,19 @@ basename "$0"
 #######################################
 # Set up constants
 #######################################
+# Color codes
+RESET='\033[0m'       # Text Reset
+BOLD="\e[1m"              # bold
+# Regular Colors
+BLACK='\033[0;30m'        # Black
+RED='\033[0;31m'          # Red
+GREEN='\033[0;32m'        # Green
+YELLOW='\033[0;33m'       # Yellow
+BLUE='\033[0;34m'         # Blue
+PURPLE='\033[0;35m'       # Purple
+CYAN='\033[0;36m'         # Cyan
+WHITE='\033[0;37m'        # White
+
 # Error codes
 E_NO_REPO=102
 E_NO_DAYLOG=103
@@ -24,8 +37,8 @@ CONFIG_HERE=$CONFIG_PATH/$CONFIG_FILE
 
 # Check for external config file
 if [ ! -f $CONFIG_HERE ]; then
-    echo "Configuration file $CONFIG_FILE not found."
-    echo "Using default configuration settings."
+    echo -e "${YELLOW}Configuration file $CONFIG_FILE not found."
+    echo -e "Using default configuration settings.${RESET}"
     # set default values
     # DO NOT enclose the tilde character ("~") in quotes (double or single)
     # as this prevents path expansion. To specify a directory name with
@@ -35,8 +48,8 @@ if [ ! -f $CONFIG_HERE ]; then
     daylog_dir=~/'repos/writing/daylogs/'
     EDITOR_APP="gvim"
 else
-    echo "Using configuration file:"
-    echo $CONFIG_HERE
+    echo -e "${GREEN}Using configuration file:"
+    echo -e $CONFIG_HERE "$RESET"
     source $CONFIG_HERE
 fi
 
@@ -107,8 +120,8 @@ E_EDITED=$("$EDITOR_APP" "$PATH_TO_LOG")
 
 
 # the script resumes here after you quit the editor
-WORD_COUNT=$(wc -w "$PATH_TO_LOG" | awk '{print $1}')
-echo "Edits complete: $WORD_COUNT words saved."
+WORD_COUNT=${BOLD}$(wc -w "$PATH_TO_LOG" | awk '{print $1}')
+echo -e "${GREEN}Edits complete: $WORD_COUNT words saved.${RESET}"
 
 # Detect platform and copy file to clipboard
 
