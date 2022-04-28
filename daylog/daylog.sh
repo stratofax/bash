@@ -11,19 +11,8 @@ basename "$0"
 #######################################
 # Set up constants
 #######################################
-# Color codes
-# Use "033" instead of "e"
-RESET='\033[0m'       # Text Reset
-BOLD="\033[1m"              # bold
-# Regular Colors
-BLACK='\033[0;30m'        # Black
-RED='\033[0;31m'          # Red
-GREEN='\033[0;32m'        # Green
-YELLOW='\033[0;33m'       # Yellow
-BLUE='\033[0;34m'         # Blue
-PURPLE='\033[0;35m'       # Purple
-CYAN='\033[0;36m'         # Cyan
-WHITE='\033[0;37m'        # White
+SCRIPT_PATH=$(dirname "$0")
+source ${SCRIPT_PATH}/colors.sh
 
 # Error codes
 E_NO_REPO=102
@@ -38,8 +27,9 @@ CONFIG_HERE=$CONFIG_PATH/$CONFIG_FILE
 
 # Check for external config file
 if [ ! -f $CONFIG_HERE ]; then
-    echo -e "${YELLOW}Configuration file $CONFIG_FILE not found."
-    echo -e "Using default configuration settings.${RESET}"
+    color_echo "${YELLOW}" "Configuration file not found:"
+    color_echo "${B_YELLOW}" "${CONFIG_FILE}"
+    color_echo "${YELLOW}" "Using default configuration settings."
     # set default values
     # DO NOT enclose the tilde character ("~") in quotes (double or single)
     # as this prevents path expansion. To specify a directory name with
@@ -49,8 +39,8 @@ if [ ! -f $CONFIG_HERE ]; then
     daylog_dir=~/'repos/writing/daylogs/'
     EDITOR_APP="gvim"
 else
-    echo -e "${GREEN}Using configuration file:"
-    echo -e $CONFIG_HERE "$RESET"
+    color_echo "${GREEN}" "Using configuration file:"
+    color_echo "${B_GREEN}" "$CONFIG_HERE"
     source $CONFIG_HERE
 fi
 
