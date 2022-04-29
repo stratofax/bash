@@ -12,7 +12,7 @@ basename "$0"
 # Set up constants
 #######################################
 SCRIPT_PATH=$(dirname "$0")
-source ${SCRIPT_PATH}/colors.sh
+source "${SCRIPT_PATH}"/colors.sh
 
 # Error codes
 E_NO_REPO=102
@@ -68,7 +68,7 @@ fi
 # Ensure we can enter the repo directory
 cd "$repo_dir" || exit
 echo "Working in repository:"
-pwd
+color_echo "${GREEN}" "$(pwd)"
 echo "Pulling the latest changes with rebase ..."
 git pull --rebase
 E_PULL=$?
@@ -102,7 +102,7 @@ echo "Appending time stamp to log file ..."
 echo  "$add_lines"  >> "$PATH_TO_LOG"
 # echo "$TIME_STAMP" >> "$PATH_TO_LOG"
 echo "File updated, using $EDITOR_APP to edit log file:"
-echo -e "${CYAN}${PATH_TO_LOG}${RESET} ..."
+color_echo "${CYAN}" "${PATH_TO_LOG} ..."
 
 # Open today's daylog in the specified editor
 # Store command result code or the script will continue
@@ -112,7 +112,7 @@ E_EDITED=$("$EDITOR_APP" "$PATH_TO_LOG")
 
 # the script resumes here after you quit the editor
 WORD_COUNT=${BOLD}$(wc -w "$PATH_TO_LOG" | awk '{print $1}')
-echo -e "${GREEN}Edits complete: $WORD_COUNT words saved.${RESET}"
+color_echo "${GREEN}" "Edits complete: $WORD_COUNT words saved."
 
 # Detect platform and copy file to clipboard
 
