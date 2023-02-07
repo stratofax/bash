@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # daylog.sh creates a file in the specified directory
 # and opens it with your favorite editor
 
