@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# daylog_cfg.sh 
-# creates a configuration file 
+# daylog_cfg.sh
+# creates a configuration file
 # in the configuration directory
 # with the configuration variables you select
 
@@ -18,7 +18,6 @@ SCRIPT_PATH=$(dirname "$0")
 source "${SCRIPT_PATH}"/colors.sh
 
 # Strings and filename constants
-EXIT_MSG="Script terminated."
 CONFIG_FILE="daylog.cfg"
 CONFIG_PATH=~/'.config/daylog'
 CONFIG_HERE=$CONFIG_PATH/$CONFIG_FILE
@@ -28,35 +27,35 @@ CONFIG_HERE=$CONFIG_PATH/$CONFIG_FILE
 #######################################
 
 function print_line( ) {
-    color_echo "${B_WHITE}" "-------------------------------------------------------"
+    color_echo "${WHITE}" "-------------------------------------------------------"
 }
 
 # review the editor, ask for changes
 function check_editor( ) {
-    color_echo "${B_WHITE}" "Current editor:"
-    whereis $editor_app
+    color_echo "${WHITE}" "Current editor:"
+    whereis "$editor_app"
+    echo $?
     # color_echo "${B_YELLOW}" "${editor_app}"
-    print_line
-    color_echo "${B_WHITE}" "Do you want to change the editor?"
-    color_echo "${B_WHITE}" "Enter the name of the editor you want to use."
-    color_echo "${B_WHITE}" "Or press enter to keep the current editor."
-    read -r new_editor_app
-    if [ -z $new_editor_app ]; then
+    color_echo "${WHITE}" "Do you want to change the editor?"
+    color_echo "${WHITE}" "Enter the name of the editor you want to use."
+    color_echo "${WHITE}" "Or press enter to keep the current editor."
+    read -r "new_editor_app"
+    if [ -z "$new_editor_app" ]; then
         color_echo "${B_WHITE}" "Keeping the current editor:"
         color_echo "${B_YELLOW}" "${editor_app}"
         print_line
     else
-        editor_app=$new_editor_app
+        editor_app="$new_editor_app"
         check_editor
     fi
 }
 
 # check to see if the directory exists
-function check_dir( ) { 
+function check_dir( ) {
     dir_name=$1
     description=$2
     dir_help=$3
-    if [ ! -d $dir_name ]; then
+    if [ ! -d "$dir_name" ]; then
         color_echo "${WHITE}" "The ${B_WHITE}${description}${WHITE} directory is:"
         color_echo "${WHITE}" "${dir_help}"
         print_line
@@ -65,29 +64,28 @@ function check_dir( ) {
         print_line
         color_echo "${B_CYAN}" "Please enter a new $description directory (CTRL-C to quit):"
         read -r dir_name
-        check_dir $dir_name $description $dir_help
+        check_dir "$dir_name" "$description" "$dir_help"
     else
         color_echo "${WHITE}" "Current $description directory:"
         color_echo "${B_YELLOW}" "${dir_name}"
-        print_line
-        color_echo "${B_WHITE}" "Do you want to change the $description directory?"
-        color_echo "${B_WHITE}" "Enter the name of the directory you want to use."
-        color_echo "${B_WHITE}" "Or press enter to keep the current directory."
+        color_echo "${WHITE}" "Do you want to change the $description directory?"
+        color_echo "${WHITE}" "Enter the name of the directory you want to use."
+        color_echo "${WHITE}" "Or press enter to keep the current directory."
         read -r new_dir_name
         # if the input is empty, keep the current directory
-        if [ -z $new_dir_name ]; then
+        if [ -z "$new_dir_name" ]; then
             color_echo "${B_WHITE}" "Keeping the current $description directory:"
             color_echo "${B_YELLOW}" "${dir_name}"
             print_line
         else
             dir_name=$new_dir_name
-            check_dir $dir_name $description $dir_help
+            check_dir "$dir_name" "$description" "$dir_help"
             color_echo "${B_WHITE}" "Using the new $description directory:"
             color_echo "${B_YELLOW}" "${dir_name}"
             print_line
         fi
     fi
-  
+    
 }
 
 #######################################
@@ -115,14 +113,14 @@ if [ ! -f $CONFIG_HERE ]; then
     editor_app="gvim"
 else
     # load the configuration file
-    source $config_here
+    source $CONFIG_HERE
 fi
 
 # review the current configuration, ask for changes
-color_echo "${B_WHITE}" "Current daylog configuration"
+color_echo "${WHITE}" "Current daylog configuration"
 print_line
 
 # review the repository directory
-check_dir $repo_dir "repository" "the root of the repository that contains your daylogs"
-check_dir $daylog_dir "daylog" "The specific directory that contains your daylogs"
+check_dir "$repo_dir" "repository" "the root of the repository that contains your daylogs"
+check_dir "$daylog_dir" "daylog" "The specific directory that contains your daylogs"
 check_editor
