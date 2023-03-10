@@ -32,20 +32,27 @@ function print_line( ) {
 
 # review the editor, ask for changes
 function check_editor( ) {
-    color_echo "${WHITE}" "Current editor:"
-    whereis "$editor_app"
-    echo $?
-    # color_echo "${B_YELLOW}" "${editor_app}"
-    color_echo "${WHITE}" "Do you want to change the editor?"
-    color_echo "${WHITE}" "Enter the name of the editor you want to use."
-    color_echo "${WHITE}" "Or press enter to keep the current editor."
-    read -r "new_editor_app"
-    if [ -z "$new_editor_app" ]; then
-        color_echo "${B_WHITE}" "Keeping the current editor:"
+    # check to see if we can locate the editor
+    if which "${editor_app}" >/dev/null; then
+        color_echo "${WHITE}" "Current editor:"
         color_echo "${B_YELLOW}" "${editor_app}"
-        print_line
+        color_echo "${WHITE}" "Do you want to change the editor?"
+        color_echo "${WHITE}" "Enter the name of the editor you want to use."
+        color_echo "${WHITE}" "Or press Enter to keep the current editor."
+        read -r "new_editor_app"
+        if [ -z "$new_editor_app" ]; then
+            color_echo "${B_WHITE}" "Keeping the current editor:"
+            color_echo "${B_YELLOW}" "${editor_app}"
+            print_line
+        else
+            editor_app="$new_editor_app"
+            check_editor
+        fi
     else
-        editor_app="$new_editor_app"
+        color_echo "${B_RED}" "The editor was not found:"
+        color_echo "${B_YELLOW}" "${editor_app}"
+        color_echo "${B_CYAN}" "Please enter a new editor (CTRL-C to quit):"
+        read -r editor_app
         check_editor
     fi
 }
@@ -70,7 +77,7 @@ function check_dir( ) {
         color_echo "${B_YELLOW}" "${dir_name}"
         color_echo "${WHITE}" "Do you want to change the $description directory?"
         color_echo "${WHITE}" "Enter the name of the directory you want to use."
-        color_echo "${WHITE}" "Or press enter to keep the current directory."
+        color_echo "${WHITE}" "Or press Enter to keep the current directory."
         read -r new_dir_name
         # if the input is empty, keep the current directory
         if [ -z "$new_dir_name" ]; then
@@ -79,10 +86,10 @@ function check_dir( ) {
             print_line
         else
             dir_name=$new_dir_name
-            check_dir "$dir_name" "$description" "$dir_help"
             color_echo "${B_WHITE}" "Using the new $description directory:"
             color_echo "${B_YELLOW}" "${dir_name}"
             print_line
+            check_dir "$dir_name" "$description" "$dir_help"
         fi
     fi
     
@@ -107,10 +114,11 @@ if [ ! -f $CONFIG_HERE ]; then
     # spaces, add the quotes AFTER the tidle, like this:
     # ~/'some path/with spaces/in it'
     # set default values
-    # repo_dir=~/'repos/writing/'
-    repo_dir=~/'nothing/here/'
+    repo_dir=~/'repos/writing/'
+    # repo_dir=~/'nothing/here/'
     daylog_dir=~/'repos/writing/daylogs/'
-    editor_app="gvim"
+    editor_app="novim"
+    # editor_app="gvim"
 else
     # load the configuration file
     source $CONFIG_HERE
@@ -124,3 +132,8 @@ print_line
 check_dir "$repo_dir" "repository" "the root of the repository that contains your daylogs"
 check_dir "$daylog_dir" "daylog" "The specific directory that contains your daylogs"
 check_editor
+
+# write the new values to the configuration file
+# if the configuration file exists, overwrite it
+# else, create it
+
