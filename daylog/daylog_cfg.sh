@@ -117,15 +117,17 @@ if [ ! -f $CONFIG_HERE ]; then
     repo_dir=~/'repos/writing/'
     # repo_dir=~/'nothing/here/'
     daylog_dir=~/'repos/writing/daylogs/'
-    editor_app="novim"
-    # editor_app="gvim"
+    # editor_app="novim"
+    editor_app="gvim"
 else
+    color_echo "${WHITE}" "Configuration file found:"
+    color_echo "${B_YELLOW}" "${CONFIG_HERE}"
     # load the configuration file
     source $CONFIG_HERE
 fi
 
 # review the current configuration, ask for changes
-color_echo "${WHITE}" "Current daylog configuration"
+color_echo "${B_WHITE}" "Current daylog configuration"
 print_line
 
 # review the repository directory
@@ -133,7 +135,30 @@ check_dir "$repo_dir" "repository" "the root of the repository that contains you
 check_dir "$daylog_dir" "daylog" "The specific directory that contains your daylogs"
 check_editor
 
-# write the new values to the configuration file
-# if the configuration file exists, overwrite it
-# else, create it
+# display a message: writing the configuration file
+# use the color_echo function from colors.sh
+color_echo "${WHITE}" "Writing the configuration file"
+color_echo "${WHITE}" "to the configuration directory:"
+color_echo "${B_YELLOW}" "${CONFIG_PATH}"
 
+# if the configuration directory does not exist, create it and the configuration file
+if [ ! -d $CONFIG_PATH ]; then
+    mkdir -p $CONFIG_PATH
+    touch $CONFIG_HERE
+fi
+
+# if the configuration file exists, overwrite it
+if [ -f $CONFIG_HERE ]; then
+    rm $CONFIG_HERE
+    touch $CONFIG_HERE
+fi
+
+# write the configuration file
+eval "echo \"repo_dir='$repo_dir'\" >> $CONFIG_HERE"
+eval "echo \"daylog_dir='$daylog_dir'\" >> $CONFIG_HERE"
+eval "echo \"editor_app='$editor_app'\" >> $CONFIG_HERE"
+color_echo "${B_WHITE}" "Configuration file written:" 
+color_echo "${B_YELLOW}" "${CONFIG_HERE}"
+print_line
+cat $CONFIG_HERE
+print_line
