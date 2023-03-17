@@ -37,7 +37,7 @@ if [ ! -f $CONFIG_HERE ]; then
     # ~/'some path/with spaces/in it'
     repo_dir=~/'repos/writing/'
     daylog_dir=~/'repos/writing/daylogs/'
-    EDITOR_APP="gvim"
+    editor_app="gvim"
 else
     color_echo "${GREEN}" "Using configuration file:"
     color_echo "${B_GREEN}" "$CONFIG_HERE"
@@ -95,18 +95,18 @@ else
 fi
 echo -e "$doing_what daylog file, ${CYAN}${DAYLOG_NAME}${RESET}"
 echo "in directory: $daylog_dir;"
-echo "then edit with $EDITOR_APP."
+echo "then edit with $editor_app."
 
 # Append an H2 timestamp to today's daylog file
 echo "Appending time stamp to log file ..."
 echo  "$add_lines"  >> "$PATH_TO_LOG"
 # echo "$TIME_STAMP" >> "$PATH_TO_LOG"
-echo "File updated, using $EDITOR_APP to edit log file:"
+echo "File updated, using $editor_app to edit log file:"
 color_echo "${CYAN}" "${PATH_TO_LOG} ..."
 
 # Open today's daylog in the specified editor
 # Store command result code or the script will continue
-E_EDITED=$("$EDITOR_APP" "$PATH_TO_LOG")
+E_EDITED=$("$editor_app" "$PATH_TO_LOG")
 # printf "Return value: %s\n" "$E_EDITED"
 
 
