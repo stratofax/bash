@@ -12,6 +12,7 @@ basename "$0"
 # Set up constants
 #######################################
 SCRIPT_PATH=$(dirname "$0")
+# shellcheck source=/dev/null # source the colors.sh file
 source "${SCRIPT_PATH}"/colors.sh
 
 # Error codes
@@ -41,15 +42,16 @@ if [ ! -f $CONFIG_HERE ]; then
 else
     color_echo "${GREEN}" "Using configuration file:"
     color_echo "${B_GREEN}" "$CONFIG_HERE"
+    # shellcheck source=/dev/null # source the configuration file
     source $CONFIG_HERE
 fi
 
 # Check for daylog directory
 ## Remove trailing slash
 daylog_dir=${daylog_dir%/}
-if [ ! -d $daylog_dir ]; then
+if [ ! -d "$daylog_dir" ]; then
     echo "Daylog directory not found:"
-    echo $daylog_dir
+    echo "$daylog_dir"
     echo "$EXIT_MSG"
     exit $E_NO_REPO
 fi
@@ -57,9 +59,9 @@ fi
 # Check for repository directory
 ## Remove trailing slash
 repo_dir=${repo_dir%/}
-if [ ! -d $repo_dir ]; then
+if [ ! -d "$repo_dir" ]; then
     echo "Repository directory not found:"
-    echo $repo_dir
+    echo "$repo_dir"
     echo "$EXIT_MSG"
     exit $E_NO_DAYLOG
 fi
@@ -81,8 +83,18 @@ if [ $E_PULL -ne 0 ]; then
 fi
 
 # Strings: filename for today's daylog, full path, time stamp
+YEAR=$(date +%Y)
+MONTH=$(date +%m)
+TODAYS_DIR="$daylog_dir/$YEAR/$MONTH"
+
+if [ ! -d "$TODAYS_DIR" ]; then
+    echo "Creating directory for today's daylog:"
+    echo "$TODAYS_DIR"
+    mkdir -p "$TODAYS_DIR"
+fi
+
 DAYLOG_NAME="log-$(date +%Y-%m-%d).md"
-PATH_TO_LOG="$daylog_dir/$DAYLOG_NAME"
+PATH_TO_LOG="$TODAYS_DIR/$DAYLOG_NAME"
 TIME_STAMP="$(date +%H:%M)"
 
 # does the file already exist?
@@ -93,14 +105,13 @@ else
     doing_what="Update existing"
     add_lines=$(printf "\n## %s" "$TIME_STAMP")
 fi
-echo -e "$doing_what daylog file, ${CYAN}${DAYLOG_NAME}${RESET}"
-echo "in directory: $daylog_dir;"
-echo "then edit with $editor_app."
+echo -e "${doing_what} daylog file, ${CYAN}${DAYLOG_NAME}${RESET}"
+echo "in directory: ${TODAYS_DIR};"
+echo "then edit with ${editor_app}."
 
 # Append an H2 timestamp to today's daylog file
 echo "Appending time stamp to log file ..."
 echo  "$add_lines"  >> "$PATH_TO_LOG"
-# echo "$TIME_STAMP" >> "$PATH_TO_LOG"
 echo "File updated, using $editor_app to edit log file:"
 color_echo "${CYAN}" "${PATH_TO_LOG} ..."
 
