@@ -110,16 +110,6 @@ if [ ! -f $CONFIG_HERE ]; then
     color_echo "${B_YELLOW}" "${CONFIG_FILE}"
     color_echo "${CYAN}" "Using default configuration settings."
     print_line
-    # DO NOT enclose the tilde character ("~") in quotes (double or single)
-    # as this prevents path expansion. To specify a directory name with
-    # spaces, add the quotes AFTER the tidle, like this:
-    # ~/'some path/with spaces/in it'
-    # set default values
-    repo_dir=~/'repos/writing/'
-    # repo_dir=~/'nothing/here/'
-    daylog_dir=~/'repos/writing/daylogs/'
-    # editor_app="novim"
-    editor_app="gvim"
 else
     color_echo "${WHITE}" "Configuration file found:"
     color_echo "${B_YELLOW}" "${CONFIG_HERE}"
@@ -127,6 +117,16 @@ else
     # shellcheck source=/dev/null # source the configuration file
     source $CONFIG_HERE
 fi
+# DO NOT enclose the tilde character ("~") in quotes (double or single)
+# as this prevents path expansion. To specify a directory name with
+# spaces, add the quotes AFTER the tidle, like this:
+# ~/'some path/with spaces/in it'
+# set default values if the configuration file is not set
+if [[ -z ${repo_dir+x} ]]; then repo_dir=~/'repos/writing/'; fi
+# repo_dir=~/'nothing/here/'
+if [[ -z ${daylog_dir+x} ]]; then daylog_dir=~/'repos/writing/daylogs/'; fi
+# editor_app="novim"
+if [[ -z ${editor_app+x} ]]; then editor_app="gvim"; fi
 
 # review the current configuration, ask for changes
 color_echo "${B_WHITE}" "Current daylog configuration"
@@ -156,6 +156,10 @@ if [ -f $CONFIG_HERE ]; then
 fi
 
 # write the configuration file
+short_machine_name=$(hostname -s)
+date_stamp=$(date +%Y-%m-%d)
+eval "echo \"# daylog configuration file for ${short_machine_name}\" >> $CONFIG_HERE"
+eval "echo \"# created on ${date_stamp}\" >> $CONFIG_HERE"
 eval "echo \"repo_dir='$repo_dir'\" >> $CONFIG_HERE"
 eval "echo \"daylog_dir='$daylog_dir'\" >> $CONFIG_HERE"
 eval "echo \"editor_app='$editor_app'\" >> $CONFIG_HERE"
