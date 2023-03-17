@@ -15,6 +15,7 @@ basename "$0"
 # Set up constants
 #######################################
 SCRIPT_PATH=$(dirname "$0")
+# shellcheck source=/dev/null # source the colors.sh file
 source "${SCRIPT_PATH}"/colors.sh
 
 # Strings and filename constants
@@ -123,6 +124,7 @@ else
     color_echo "${WHITE}" "Configuration file found:"
     color_echo "${B_YELLOW}" "${CONFIG_HERE}"
     # load the configuration file
+    # shellcheck source=/dev/null # source the configuration file
     source $CONFIG_HERE
 fi
 
