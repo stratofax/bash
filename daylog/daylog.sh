@@ -12,6 +12,7 @@ basename "$0"
 # Set up constants
 #######################################
 SCRIPT_PATH=$(dirname "$0")
+# shellcheck source=/dev/null # source the colors.sh file
 source "${SCRIPT_PATH}"/colors.sh
 
 # Error codes
@@ -41,15 +42,16 @@ if [ ! -f $CONFIG_HERE ]; then
 else
     color_echo "${GREEN}" "Using configuration file:"
     color_echo "${B_GREEN}" "$CONFIG_HERE"
+    # shellcheck source=/dev/null # source the configuration file
     source $CONFIG_HERE
 fi
 
 # Check for daylog directory
 ## Remove trailing slash
 daylog_dir=${daylog_dir%/}
-if [ ! -d $daylog_dir ]; then
+if [ ! -d "$daylog_dir" ]; then
     echo "Daylog directory not found:"
-    echo $daylog_dir
+    echo "$daylog_dir"
     echo "$EXIT_MSG"
     exit $E_NO_REPO
 fi
@@ -57,9 +59,9 @@ fi
 # Check for repository directory
 ## Remove trailing slash
 repo_dir=${repo_dir%/}
-if [ ! -d $repo_dir ]; then
+if [ ! -d "$repo_dir" ]; then
     echo "Repository directory not found:"
-    echo $repo_dir
+    echo "$repo_dir"
     echo "$EXIT_MSG"
     exit $E_NO_DAYLOG
 fi
