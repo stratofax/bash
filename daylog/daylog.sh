@@ -117,9 +117,13 @@ color_echo "${CYAN}" "${PATH_TO_LOG} ..."
 
 # Open today's daylog in the specified editor
 # Store command result code or the script will continue
+# if the editor_app is vim or nvim, 
+# replace with GUI default
+if [ "$editor_app" = "vim" ] || [ "$editor_app" = "nvim" ]; then
+  editor_app="gvim"
+fi
 E_EDITED=$("$editor_app" "$PATH_TO_LOG")
 # printf "Return value: %s\n" "$E_EDITED"
-
 
 # the script resumes here after you quit the editor
 WORD_COUNT=${BOLD}$(wc -w "$PATH_TO_LOG" | awk '{print $1}')
