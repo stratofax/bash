@@ -2,4 +2,5 @@
 *.tmp
 *.log
 *.cache
+*.swp
 .DS_Store
