@@ -13,7 +13,7 @@ basename "$0"
 #######################################
 SCRIPT_PATH=$(dirname "$0")
 # shellcheck source=/dev/null # source the colors.sh file
-source "${SCRIPT_PATH}"/colors.sh
+source "${SCRIPT_PATH}"/../colors.sh
 
 # Error codes
 E_NO_REPO=102
