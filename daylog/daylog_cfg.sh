@@ -15,7 +15,7 @@ basename "$0"
 # Set up constants
 #######################################
 SCRIPT_PATH=$(dirname "$0")
-# shellcheck source=/dev/null # source the colors.sh file
+# Add color constants and color_echo function
 source "${SCRIPT_PATH}"/../colors.sh
 
 # Strings and filename constants
