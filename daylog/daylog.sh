@@ -1,6 +1,7 @@
-#!/usr/bin/env bash
-# daylog.sh creates a file in the specified directory
+#!/bin/bash
+# creates a file in the specified directory
 # and opens it with your favorite editor
+# shellcheck disable=SC2034  # Unused variables left for readability
 
 # turn on unoffical bash strict mode
 set -euo pipefail
@@ -13,7 +14,7 @@ basename "$0"
 #######################################
 SCRIPT_PATH=$(dirname "$0")
 # shellcheck source=/dev/null # source the colors.sh file
-source "${SCRIPT_PATH}"/../colors.sh
+source "${SCRIPT_PATH}"/../lib/colors.sh
 
 # Error codes
 E_NO_REPO=102
