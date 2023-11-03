@@ -1,7 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
 #######################################
 # A starting template for bash scripts
 #######################################
+
 # turn on output for debugging
 #set -x
 # turn off output for production
