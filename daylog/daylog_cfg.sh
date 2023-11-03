@@ -1,4 +1,4 @@
-#!//bin/bash
+#!/bin/bash
 # creates a configuration file
 # in the configuration directory
 # with the configuration variables you select
