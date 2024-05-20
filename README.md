@@ -43,7 +43,7 @@ We're going to keep it simple here and stick with:
 
 ## Bash tips and tricks: the wiki
 
-In addition to handy bash scripts, there are also handy bash one-liners, aliases, custom prompts and other goodies. If it's not a script file, but useful bash knowledge, I'll put it in this repo's [bash Wiki](https://github.com/stratofax/bash/wiki)
+In addition to handy bash scripts, there are also bash one-liners, aliases, custom prompts, links, and other goodies. If it's not a script file, but useful bash knowledge, I'll put it in this repo's [bash Wiki](https://github.com/stratofax/bash/wiki)
 
 ## Getting started
 
