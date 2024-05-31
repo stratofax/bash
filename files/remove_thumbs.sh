@@ -1,6 +1,24 @@
 #!/bin/bash
 
-source ../lib/colors.sh
+# Remove the image thumbnails from subdirectories in the base directory
+# and move them to another directory
+# Great for cleaning up a WordPress
+
+# TODO: rewrite with find command to recurse through subdirectories
+
+# turn on unoffical bash strict mode
+set -euo pipefail
+IFS=$'\n\t'
+
+# what script is running?
+basename "$0"
+
+#######################################
+# Set up constants
+#######################################
+SCRIPT_PATH=$(dirname "$0")
+# Add color constants and color_echo function
+source "${SCRIPT_PATH}"/../lib/colors.sh
 
 # Define the settings
 BASE_DIR="/Volumes/ExtSSD/Media/NHCC/slideshow/2024"
