@@ -22,7 +22,7 @@ color_echo "${GREEN}" "$(pwd)"
 
 for dir in */; do
   echo
-  color_echo "${B_YELLOW}" "Directory >> $dir"
+  color_echo "${B_YELLOW}" "Repo owner >> $dir"
   cd "$dir"
   "${SCRIPT_DIR}"/syncdirs.sh
   cd ..
