@@ -1,50 +1,103 @@
 # bash
 
-Cross-platform bash scripts for Linux, Mac, and Windows computers.
+Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) computers. This repository contains a collection of utilities for automating common development tasks, managing git repositories, and maintaining system configurations.
 
-## bash style guide
+## Repository Structure
 
-To keep things consistent, I use the [Unofficial Shell Scripting Stylesheet](https://tldp.org/LDP/abs/html/unofficialst.html).
+- `cfg/` - System configuration utilities
+  - `install_dotfiles.sh` - Sets up dotfiles on a new computer
+  - `install_source_code_pro.sh` - Installs Adobe's Source Code Pro font
 
-### Naming Things
+- `daylog/` - Daily logging tools
+  - `daylog.sh` - Creates and manages daily log entries
+  - `daylog_cfg.sh` - Configures daylog settings
+  - Additional scripts for organizing logs by date
 
-* `variable_name` -- lower case, underscore to separate words.
-* `CONSTANT_NAME` -- a variable that you won't change (note that bash does not enforce this)
-* `E_ERROR_CODE` -- an error code (constant): prefix with "E_"
-* `FunctionName` -- Use Upper Case, no spaces
+- `files/` - File management utilities
+  - `savefiletree.sh` - Generates directory trees and consolidates file contents
 
-## Why bash?
+- `git/` - Git automation scripts
+  - `create_github_repo.sh` - Sets up new GitHub repositories
+  - `pushpull.sh`, `syncall.sh`, `syncdirs.sh` - Various git sync utilities
+  - `startwiki.sh` - Wiki startup automation
 
-The Bourne Again Shell (bash) is installed by default on almost every Linux distro, all Macs, and is even available on Windows. It's also available on most commercial Unix installations. This means bash is the closest thing there is to a universal shell.
+- `lib/` - Shared library files
+  - `bash-template.sh` - Template for new bash scripts
+  - `colors.sh` - Terminal color definitions and utilities
 
-The bash scripts in this repository are fully bash-compatible, but that doesn't mean they're POSIX-compatible.
+- `updates/` - System update utilities
+  - `update_servers.sh` - Automates server updates
 
-I don't use bash as my primary shell -- I prefer fish. You might use another shell too: zsh, korn, whatever. When I'm writing scripts, though, I use bash. I just need to use the bash shebang at the top of the script file:
+## Prerequisites
 
+- Bash shell (version 4.0 or higher recommended)
+- Standard Unix utilities (`find`, `tree`, etc.)
+- Git (for repository management scripts)
+- For Windows users: Windows Subsystem for Linux (WSL) or Git Bash
+
+## Installation
+
+1. Clone the repository:
 ```bash
-#!/bin/bash
+git clone https://github.com/stratofax/bash.git
 ```
 
-This tells my computer, whatever OS it's running, to use the default bash interpreter to run my script.
-
-If you'd like your bash scripts to use the first bash interpreter in your PATH, use this shebang line instead:
-
+2. Add the script directories to your PATH or create symlinks to the scripts you want to use:
 ```bash
-#!/usr/bin/env bash
+# Example: Add to PATH in your .bashrc or .bash_profile
+export PATH="$PATH:/path/to/bash/bin"
 ```
 
-This adds more complexity and flexibility to your configuration, but also more confusion. If you want to use multiple bash interpreters, you probably know how to do a global replace across an entire directory struture.
+## Usage
 
-We're going to keep it simple here and stick with:
+Each script includes help information available via the `-h` or `--help` flag. Here are some common use cases:
 
+### Managing Daily Logs
 ```bash
-#!/bin/bash
+# Configure daylog settings
+./daylog/daylog_cfg.sh
+
+# Create/edit today's log
+./daylog/daylog.sh
 ```
 
-## Bash tips and tricks: the wiki
+### Git Repository Management
+```bash
+# Sync all git repositories
+./git/syncall.sh
 
-In addition to handy bash scripts, there are also bash one-liners, aliases, custom prompts, links, and other goodies. If it's not a script file, but useful bash knowledge, I'll put it in this repo's [bash Wiki](https://github.com/stratofax/bash/wiki)
+# Create a new GitHub repository
+./git/create_github_repo.sh
+```
 
-## Getting started
+### File Management
+```bash
+# Generate a directory tree and file contents report
+./files/savefiletree.sh -d /path/to/directory
+```
 
-If you want to contribute to this repo, please contact me via GitHub.
+## Coding Style
+
+This repository follows the [Unofficial Shell Scripting Stylesheet](https://tldp.org/LDP/abs/html/unofficialst.html).
+
+### Naming Conventions
+
+* `variable_name` - Lower case with underscores for variables
+* `CONSTANT_NAME` - Upper case for constants
+* `E_ERROR_CODE` - Error codes prefixed with "E_"
+* `FunctionName` - Upper case for function names
+
+## Contributing
+
+If you'd like to contribute to this repository, please:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
+
+For questions or suggestions, please open an issue or contact the maintainer via GitHub.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
