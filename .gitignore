@@ -1,5 +1,8 @@
-*.cfg
-*.tmp
-*.log
 *.cache
-.DS_Store
+*.cfg
+*.csv
+*.DS_Store
+*.log
+*.swp
+*.tmp
+*.txt

@@ -14,8 +14,9 @@ set -euo pipefail
 
 # Go to your home directory
 cd $HOME
+# the update to .bashrc is deprecated because pulling the dotfiles from the repo will do the same
 # set up the dotfiles alias in .bashrc 
-echo "alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'" >> $HOME/.bashrc
+# echo "alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'" >> $HOME/.bashrc
 # now add it to the current bash session
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 # avoid recursion

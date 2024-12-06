@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #######################################
-# A starting template for bash scripts
+# Start the day off right with this quick automation
 #######################################
 
 # turn on output for debugging
@@ -12,7 +12,11 @@ set +x
 set -euo pipefail
 #######################################
 
-echo "Hello, world!"
-echo "For more information on bash scripting,"
-echo "see the Advanced Bash Scripting Guide"
-echo "https://tldp.org/LDP/abs/html/index."
+SCRIPT_PATH=$(dirname "$0")
+MY_REPOS_DIR="${HOME}/Repos/stratofax/"
+MY_WIKI_DIR='slipbox/'
+
+cd "${MY_REPOS_DIR}"
+"${SCRIPT_PATH}"/syncdirs.sh
+cd "${MY_WIKI_DIR}"
+gvim &

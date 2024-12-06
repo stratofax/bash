@@ -1,5 +1,4 @@
-#!/usr/bin/env bash
-# daylog_cfg.sh
+#!/bin/bash
 # creates a configuration file
 # in the configuration directory
 # with the configuration variables you select
@@ -15,8 +14,8 @@ basename "$0"
 # Set up constants
 #######################################
 SCRIPT_PATH=$(dirname "$0")
-# shellcheck source=/dev/null # source the colors.sh file
-source "${SCRIPT_PATH}"/colors.sh
+# Add color constants and color_echo function
+source "${SCRIPT_PATH}"/../lib/colors.sh
 
 # Strings and filename constants
 CONFIG_FILE="daylog.cfg"
@@ -93,7 +92,7 @@ function check_dir( ) {
             check_dir "$dir_name" "$description" "$dir_help"
         fi
     fi
-    
+
 }
 
 #######################################
@@ -163,7 +162,7 @@ eval "echo \"# created on ${date_stamp}\" >> $CONFIG_HERE"
 eval "echo \"repo_dir='$repo_dir'\" >> $CONFIG_HERE"
 eval "echo \"daylog_dir='$daylog_dir'\" >> $CONFIG_HERE"
 eval "echo \"editor_app='$editor_app'\" >> $CONFIG_HERE"
-color_echo "${B_WHITE}" "Configuration file written:" 
+color_echo "${B_WHITE}" "Configuration file written:"
 color_echo "${B_YELLOW}" "${CONFIG_HERE}"
 print_line
 cat $CONFIG_HERE
