@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "Attemping to push and pull changes in directory:"
+echo "Attempting to push and pull changes in directory:"
 pwd
 echo "Checking for local changes to push ..."
 changed_files=$(git status -s)
