@@ -1,125 +1,129 @@
 #!/bin/bash
 
-# Exit on any error
-set -e
+# Exit on error, unset variables, and pipe failures
+set -euo pipefail
 
-# Function to display usage information
-usage() {
-    echo "Usage: $0 [OPTIONS]"
-    echo "Consolidates text files into a single file and generates a directory tree."
-    echo
-    echo "Options:"
-    echo "  -d, --directory DIR    Source directory (default: current directory)"
-    echo "  -o, --output DIR       Output directory (default: ./output)"
-    echo "  -e, --exclude PATTERN  Additional exclude pattern (can be used multiple times)"
-    echo "  -h, --help            Display this help message"
-}
-
-# Function to check if a command exists
-check_command() {
-    if ! command -v "$1" >/dev/null 2>&1; then
-        echo "Error: Required command '$1' not found. Please install it first."
-        exit 1
-    fi
-}
-
-# Parse command line arguments
-SOURCE_DIR="."
-OUTPUT_DIR=~/output
+# Default values
+DEFAULT_SOURCE_DIR="."
+DEFAULT_OUTPUT_DIR="${HOME}/output"
 EXCLUDE_PATTERNS=()
 
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        -d|--directory)
-            SOURCE_DIR="$2"
-            shift 2
-            ;;
-        -o|--output)
-            OUTPUT_DIR="$2"
-            shift 2
-            ;;
-        -e|--exclude)
-            EXCLUDE_PATTERNS+=("$2")
-            shift 2
-            ;;
-        -h|--help)
-            usage
-            exit 0
-            ;;
-        *)
-            echo "Error: Unknown option $1"
-            usage
+function print_usage() {
+    cat << EOF
+Usage: $(basename "$0") [OPTIONS]
+Consolidates text files into a single file and generates a directory tree.
+
+Options:
+  -d, --directory DIR    Source directory (default: current directory)
+  -o, --output DIR       Output directory (default: ~/output)
+  -e, --exclude PATTERN  Additional exclude pattern (can be used multiple times)
+  -h, --help             Display this help message
+EOF
+}
+
+function verify_requirements() {
+    local required_cmds=("tree" "find")
+    
+    for cmd in "${required_cmds[@]}"; do
+        if ! command -v "$cmd" >/dev/null 2>&1; then
+            echo "Error: Required command '$cmd' not found. Please install it first."
             exit 1
-            ;;
-    esac
-done
+        fi
+    done
+}
 
-# Check for required commands
-check_command tree
-check_command find
+function parse_arguments() {
+    local OPTIND
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -d|--directory) source_dir="$2"; shift 2 ;;
+            -o|--output)    output_dir="$2"; shift 2 ;;
+            -e|--exclude)   EXCLUDE_PATTERNS+=("$2"); shift 2 ;;
+            -h|--help)      print_usage; exit 0 ;;
+            *)             echo "Error: Unknown option $1"; print_usage; exit 1 ;;
+        esac
+    done
+}
 
-# Validate source directory
-if [[ ! -d "$SOURCE_DIR" ]]; then
-    echo "Error: Source directory '$SOURCE_DIR' does not exist."
-    exit 1
-fi
+function setup_directories() {
+    if [[ ! -d "$source_dir" ]]; then
+        echo "Error: Source directory '$source_dir' does not exist."
+        exit 1
+    fi
+    mkdir -p "$output_dir"
+}
 
-# Create output directory if it doesn't exist
-mkdir -p "$OUTPUT_DIR"
+function generate_filenames() {
+    local date_suffix
+    date_suffix=$(date +%Y-%m-%d_%H-%M-%S)
+    output_file="${output_dir}/file_contents_${date_suffix}.txt"
+    tree_file="${output_dir}/tree_${date_suffix}.txt"
+}
 
-# Generate the output filenames using current date and time in ISO format
-date_suffix=$(date +%Y-%m-%d_%H-%M-%S)
-output_file="$OUTPUT_DIR/file_contents_${date_suffix}.txt"
-tree_file="$OUTPUT_DIR/tree_${date_suffix}.txt"
+function write_header() {
+    cat << EOF > "$output_file"
+=== File Contents Consolidated on $(date '+%Y-%m-%d %H:%M:%S') ===
+Source Directory: $(realpath "$source_dir")
+==================================================
 
-# Build find exclusion patterns
-FIND_EXCLUDES=(-not -path '*/\.*' -not -path "./${OUTPUT_DIR}/*")
-for pattern in "${EXCLUDE_PATTERNS[@]}"; do
-    FIND_EXCLUDES+=(-not -path "*/$pattern*")
-done
+EOF
+}
 
-# Create header for the output file
-{
-    echo "=== File Contents Consolidated on $(date '+%Y-%m-%d %H:%M:%S') ==="
-    echo "Source Directory: $(realpath "$SOURCE_DIR")"
-    echo "=================================================="
-    echo
-} > "$output_file"
-
-# Find all text files and concatenate their contents
-echo "Consolidating files..."
-find "$SOURCE_DIR" -type f "${FIND_EXCLUDES[@]}" -exec file {} \; | 
-    grep -i "text" | 
-    cut -d: -f1 | 
-    while read -r file; do
-        # Get the relative path
-        relpath=$(realpath --relative-to="$SOURCE_DIR" "$file")
-        {
-            echo -e "\n=== $relpath ==="
-            echo -e "Last modified: $(stat -c %y "$file")"
-            echo -e "Size: $(stat -c %s "$file") bytes"
-            echo -e "===================\n"
-            cat "$file"
-        } >> "$output_file"
+function process_files() {
+    local find_excludes=(-not -path '*/\.*' -not -path "./${output_dir}/*")
+    for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+        find_excludes+=(-not -path "*/$pattern*")
     done
 
-# Generate and save tree output
-echo "Generating directory tree..."
-{
-    echo "=== Directory Tree Generated on $(date '+%Y-%m-%d %H:%M:%S') ==="
-    echo "Source Directory: $(realpath "$SOURCE_DIR")"
-    echo "=================================================="
-    echo
-    tree --dirsfirst -I "${OUTPUT_DIR##*/}" "$SOURCE_DIR" --noreport |
-        grep -v "^\.$" |
-        grep -v "^\.\." |
-        grep -v "^\.git" |
-        grep -v "^\.[a-zA-Z]"
-} > "$tree_file"
+    find "$source_dir" -type f "${find_excludes[@]}" -exec file {} \; | 
+        grep -i "text" | 
+        cut -d: -f1 | 
+        while read -r file; do
+            local relpath
+            relpath=$(realpath --relative-to="$source_dir" "$file")
+            {
+                echo -e "\n=== $relpath ==="
+                echo -e "Last modified: $(stat -c %y "$file")"
+                echo -e "Size: $(stat -c %s "$file") bytes"
+                echo -e "===================\n"
+                cat "$file"
+            } >> "$output_file"
+        done
+}
 
-# Print summary
-echo -e "\nSummary:"
-echo "- File contents written to: $output_file"
-echo "- Directory tree written to: $tree_file"
-echo "- Total files processed: $(grep -c "^===" "$output_file")"
-echo "- Total size: $(du -h "$output_file" | cut -f1)"
+function generate_tree() {
+    {
+        echo "=== Directory Tree Generated on $(date '+%Y-%m-%d %H:%M:%S') ==="
+        echo "Source Directory: $(realpath "$source_dir")"
+        echo "=================================================="
+        echo
+        tree --dirsfirst -I "${output_dir##*/}" "$source_dir" --noreport |
+            grep -v "^\.$" |
+            grep -v "^\.\." |
+            grep -v "^\.git" |
+            grep -v "^\.[a-zA-Z]"
+    } > "$tree_file"
+}
+
+function print_summary() {
+    echo -e "\nSummary:"
+    echo "- File contents written to: $output_file"
+    echo "- Directory tree written to: $tree_file"
+    echo "- Total files processed: $(grep -c "^===" "$output_file")"
+    echo "- Total size: $(du -h "$output_file" | cut -f1)"
+}
+
+# Main execution
+source_dir="$DEFAULT_SOURCE_DIR"
+output_dir="$DEFAULT_OUTPUT_DIR"
+
+verify_requirements
+parse_arguments "$@"
+setup_directories
+generate_filenames
+write_header
+echo "Consolidating files..."
+process_files
+echo "Generating directory tree..."
+generate_tree
+print_summary
