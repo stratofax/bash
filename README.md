@@ -25,6 +25,9 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
   - `bash-template.sh` - Template for new bash scripts
   - `colors.sh` - Terminal color definitions and utilities
 
+- `linux/` - Linux-specific utilities
+  - `toggle_touchscreen.sh` - Interactive script to enable/disable touchscreen input
+
 - `updates/` - System update utilities
   - `update_servers.sh` - Automates server updates
 
@@ -74,6 +77,12 @@ Each script includes help information available via the `-h` or `--help` flag. H
 ```bash
 # Generate a directory tree and file contents report
 ./files/savefiletree.sh -d /path/to/directory
+```
+
+### Linux Utilities
+```bash
+# Toggle touchscreen on/off
+./linux/toggle_touchscreen.sh
 ```
 
 ## Coding Style
