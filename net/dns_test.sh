@@ -6,8 +6,8 @@
 nameserver="" # Example for using default public nameservers
 
 # add specific nameservers here
-# nameserver="ns-396.awsdns-49.com" # Example specific nameserver
-nameserver="lina.ns.cloudflare.com"
+nameserver="ns-396.awsdns-49.com" # Example specific nameserver
+# nameserver="lina.ns.cloudflare.com"
 
 # Define the array of parameters.
 # Each element is a string with "type_name,subdomain"
