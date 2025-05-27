@@ -9,9 +9,13 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
   - `install_source_code_pro.sh` - Installs Adobe's Source Code Pro font
 
 - `daylog/` - Daily logging tools
+  - `diary.sh` - Interactive diary/journal tool with git integration
+    - Creates and manages dated markdown entries
+    - Supports custom editor configuration
+    - Automatically handles git operations
+    - Command-line options for customization
   - `daylog.sh` - Creates and manages daily log entries
   - `daylog_cfg.sh` - Configures daylog settings
-  - Additional scripts for organizing logs by date
 
 - `files/` - File management utilities
   - `savefiletree.sh` - Generates directory trees and consolidates file contents
