@@ -87,7 +87,7 @@ Each script includes help information available via the `-h` or `--help` flag. H
 
 ## Coding Style
 
-This repository follows the [Unofficial Shell Scripting Stylesheet](https://tldp.org/LDP/abs/html/unofficialst.html).
+This repository follows best practices from the [Advanced Bash Scripting Guide](https://tldp.org/LDP/abs/html/index.html) and uses ShellCheck for code quality validation.
 
 ### Naming Conventions
 
@@ -95,6 +95,16 @@ This repository follows the [Unofficial Shell Scripting Stylesheet](https://tldp
 * `CONSTANT_NAME` - Upper case for constants
 * `E_ERROR_CODE` - Error codes prefixed with "E_"
 * `FunctionName` - Upper case for function names
+
+### Code Quality
+
+All scripts use bash strict mode (`set -euo pipefail`) and can be validated with ShellCheck:
+
+```bash
+shellcheck script.sh
+```
+
+The repository includes `.shellcheckrc` configuration for external source validation.
 
 ## Contributing
 
