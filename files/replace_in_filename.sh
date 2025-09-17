@@ -12,7 +12,7 @@ set -euo pipefail
 #######################################
 
 # Configuration variables for search and replace
-SEARCH_STRING="_-_"
+SEARCH_STRING=" "
 REPLACE_STRING="_"
 
 # Get script path for sourcing libraries
