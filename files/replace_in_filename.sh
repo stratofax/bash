@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #######################################
-# Rename files replacing '_-_' with '_'
-# Usage: ./rename_underscore_dash.sh [directory]
+# Rename files replacing search string with replacement string
+# Usage: ./replace_in_filename.sh [directory]
 #######################################
 
 # turn off output for production
@@ -10,6 +10,10 @@ set +x
 # turn on unofficial bash strict mode
 set -euo pipefail
 #######################################
+
+# Configuration variables for search and replace
+SEARCH_STRING="_-_"
+REPLACE_STRING="_"
 
 # Get script path for sourcing libraries
 SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -24,7 +28,7 @@ IFS=$'\n\t'
 show_help() {
     echo "Usage: $0 [DIRECTORY]"
     echo ""
-    echo "Rename files in the specified directory by replacing '_-_' with '_' in filenames."
+    echo "Rename files in the specified directory by replacing '${SEARCH_STRING}' with '${REPLACE_STRING}' in filenames."
     echo ""
     echo "Arguments:"
     echo "  DIRECTORY    Directory to process (default: current directory)"
@@ -67,10 +71,10 @@ for file in *; do
     # Skip directories
     [[ -f "$file" ]] || continue
 
-    # Check if filename contains '_-_'
-    if [[ "$file" == *"_-_"* ]]; then
-        # Create new filename by replacing all occurrences of '_-_' with '_'
-        new_name="${file//_-_/_}"
+    # Check if filename contains the search string
+    if [[ "$file" == *"$SEARCH_STRING"* ]]; then
+        # Create new filename by replacing all occurrences of search string with replace string
+        new_name="${file//$SEARCH_STRING/$REPLACE_STRING}"
 
         # Check if target file already exists
         if [[ -e "$new_name" ]]; then
@@ -87,7 +91,7 @@ done
 
 # Summary
 if [[ $renamed_count -eq 0 ]]; then
-    color_echo "$YELLOW" "No files with '_-_' pattern found in the directory."
+    color_echo "$YELLOW" "No files with '${SEARCH_STRING}' pattern found in the directory."
 else
     color_echo "$GREEN" "Successfully renamed $renamed_count file(s)."
 fi
