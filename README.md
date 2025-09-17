@@ -28,6 +28,8 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
   - `move_list.sh` - Batch file moving utility
   - `recurse_subdirs.sh` - Recursive subdirectory operations
   - `remove_thumbs.sh` - Removes thumbnail files
+  - `replace_in_filename.sh` - Batch filename string replacement utility
+  - `resize_images.sh` - JPEG image resizing with aspect ratio preservation
 
 - `git/` - Git automation scripts
   - `create_github_repo.sh` - Sets up new GitHub repositories
@@ -54,6 +56,7 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
 - Bash shell (version 4.0 or higher recommended)
 - Standard Unix utilities (`find`, `tree`, etc.)
 - Git (for repository management scripts)
+- ImageMagick (for image processing scripts)
 - For Windows users: Windows Subsystem for Linux (WSL) or Git Bash
 
 ## Installation
@@ -95,6 +98,35 @@ Each script includes help information available via the `-h` or `--help` flag. H
 ```bash
 # Generate a directory tree and file contents report
 ./files/savefiletree.sh -d /path/to/directory
+
+# Replace spaces with underscores in filenames
+./files/replace_in_filename.sh /path/to/directory
+
+# Resize JPEG images to 900px height (default)
+./files/resize_images.sh /path/to/images
+
+# Create thumbnails at 150px height with custom suffix
+./files/resize_images.sh /path/to/images -s thumb 150
+
+# Resize with custom quality and suffix
+./files/resize_images.sh /path/to/images 600 90 -s web
+```
+
+### Image Processing
+```bash
+# Resize JPEG images while maintaining aspect ratio
+./files/resize_images.sh ~/photos                    # Default: 900px height, 85% quality
+./files/resize_images.sh ~/photos 1200               # Custom height
+./files/resize_images.sh ~/photos 800 95             # Custom height and quality
+./files/resize_images.sh ~/photos -s thumb 150       # Thumbnails with custom suffix
+./files/resize_images.sh ~/photos 600 85 -s web     # Web-optimized with custom suffix
+
+# The script automatically:
+# - Detects and uses ImageMagick (cross-platform)
+# - Maintains aspect ratios
+# - Creates organized output directories
+# - Provides progress feedback with colored output
+# - Handles errors gracefully
 ```
 
 ### AI Processing
