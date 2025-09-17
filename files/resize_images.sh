@@ -3,7 +3,8 @@
 #######################################
 # Resize JPEG images to specified height while maintaining aspect ratio
 # Usage: ./resize_images.sh [directory] [height] [quality]
-# Supports ImageMagick, GraphicsMagick, and macOS sips
+# Requires: ImageMagick (checked at startup)
+# Supports: ImageMagick, GraphicsMagick, and macOS sips as fallbacks
 #######################################
 
 # turn off output for production
@@ -26,6 +27,37 @@ source "${SCRIPT_PATH}"/../lib/colors.sh
 # Set IFS for safe word splitting
 IFS=$'\n\t'
 
+# Function to check ImageMagick installation (cross-platform)
+check_imagemagick() {
+    local has_convert=false
+    local has_magick=false
+    
+    # Check for convert command (ImageMagick 6.x and 7.x)
+    if command -v convert >/dev/null 2>&1; then
+        has_convert=true
+    fi
+    
+    # Check for magick command (ImageMagick 7.x)
+    if command -v magick >/dev/null 2>&1; then
+        has_magick=true
+    fi
+    
+    # Verify it's actually ImageMagick (not Windows convert.exe)
+    if [[ "$has_convert" == true ]]; then
+        if convert -version 2>/dev/null | grep -q "ImageMagick"; then
+            return 0  # ImageMagick found via convert
+        fi
+    fi
+    
+    if [[ "$has_magick" == true ]]; then
+        if magick -version 2>/dev/null | grep -q "ImageMagick"; then
+            return 0  # ImageMagick found via magick
+        fi
+    fi
+    
+    return 1  # ImageMagick not found
+}
+
 # Function to display help
 show_help() {
     echo "Usage: $0 [DIRECTORY] [HEIGHT] [QUALITY]"
@@ -46,18 +78,22 @@ show_help() {
     echo "  $0 /path/to/images 1200      # Resize to 1200px height"
     echo "  $0 /path/to/images 900 90    # Resize to 900px height with 90% quality"
     echo ""
+    echo "Requirements:"
+    echo "  - ImageMagick must be installed (checked at startup)"
+    echo ""
     echo "Supported tools (in order of preference):"
-    echo "  1. ImageMagick (convert/magick)"
-    echo "  2. GraphicsMagick (gm)"
-    echo "  3. macOS sips (built-in)"
+    echo "  1. ImageMagick (convert/magick) - Required"
+    echo "  2. GraphicsMagick (gm) - Fallback"
+    echo "  3. macOS sips (built-in) - Fallback"
 }
 
 # Function to detect available image processing tool
 detect_tool() {
-    if command -v convert >/dev/null 2>&1; then
-        echo "imagemagick"
-    elif command -v magick >/dev/null 2>&1; then
+    # Since we've already verified ImageMagick is available, prioritize it
+    if command -v magick >/dev/null 2>&1; then
         echo "imagemagick_v7"
+    elif command -v convert >/dev/null 2>&1; then
+        echo "imagemagick"
     elif command -v gm >/dev/null 2>&1; then
         echo "graphicsmagick"
     elif command -v sips >/dev/null 2>&1; then
@@ -108,6 +144,21 @@ quality="${3:-$DEFAULT_QUALITY}"
 if [[ "$target_dir" == "-h" || "$target_dir" == "--help" ]]; then
     show_help
     exit 0
+fi
+
+# Check ImageMagick availability upfront (cross-platform)
+if ! check_imagemagick; then
+    color_echo "$RED" "Error: ImageMagick is not installed or not accessible."
+    color_echo "$YELLOW" "ImageMagick is required for this script to function."
+    echo ""
+    color_echo "$CYAN" "Installation instructions:"
+    color_echo "$WHITE" "  macOS:     brew install imagemagick"
+    color_echo "$WHITE" "  Ubuntu:    sudo apt-get install imagemagick"
+    color_echo "$WHITE" "  CentOS:    sudo yum install ImageMagick"
+    color_echo "$WHITE" "  Windows:   Download from https://imagemagick.org/script/download.php#windows"
+    echo ""
+    color_echo "$YELLOW" "After installation, restart your terminal and try again."
+    exit 1
 fi
 
 # Validate height parameter
