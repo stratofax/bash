@@ -60,7 +60,7 @@ check_imagemagick() {
 
 # Function to display help
 show_help() {
-    echo "Usage: $0 [DIRECTORY] [HEIGHT] [QUALITY]"
+    echo "Usage: $0 [DIRECTORY] [HEIGHT] [QUALITY] [-s SUFFIX]"
     echo ""
     echo "Resize JPEG images in the specified directory to the given height while maintaining aspect ratio."
     echo ""
@@ -71,12 +71,15 @@ show_help() {
     echo ""
     echo "Options:"
     echo "  -h, --help   Show this help message"
+    echo "  -s SUFFIX    Custom suffix for output files (default: ${OUTPUT_SUFFIX})"
     echo ""
     echo "Examples:"
     echo "  $0                           # Resize JPEGs in current dir to 900px height"
     echo "  $0 /path/to/images           # Resize JPEGs in specific directory"
     echo "  $0 /path/to/images 1200      # Resize to 1200px height"
     echo "  $0 /path/to/images 900 90    # Resize to 900px height with 90% quality"
+    echo "  $0 /path/to/images -s thumb 150    # Resize to 150px height with '_thumb' suffix"
+    echo "  $0 /path/to/images 150 85 -s small # Resize to 150px, 85% quality, '_small' suffix"
     echo ""
     echo "Requirements:"
     echo "  - ImageMagick must be installed (checked at startup)"
@@ -137,13 +140,51 @@ resize_image() {
 }
 
 # Parse command line arguments
-target_dir="${1:-.}"
-height="${2:-$DEFAULT_HEIGHT}"
-quality="${3:-$DEFAULT_QUALITY}"
+target_dir="."
+height="$DEFAULT_HEIGHT"
+quality="$DEFAULT_QUALITY"
+custom_suffix="$OUTPUT_SUFFIX"
 
-if [[ "$target_dir" == "-h" || "$target_dir" == "--help" ]]; then
-    show_help
-    exit 0
+# Process arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -s)
+            if [[ -n "$2" && "$2" != -* ]]; then
+                custom_suffix="_$2"
+                shift 2
+            else
+                color_echo "$RED" "Error: -s requires a suffix argument"
+                exit 1
+            fi
+            ;;
+        -*)
+            color_echo "$RED" "Error: Unknown option $1"
+            exit 1
+            ;;
+        *)
+            # Positional arguments: directory, height, quality
+            if [[ "$target_dir" == "." ]]; then
+                target_dir="$1"
+            elif [[ "$height" == "$DEFAULT_HEIGHT" ]]; then
+                height="$1"
+            elif [[ "$quality" == "$DEFAULT_QUALITY" ]]; then
+                quality="$1"
+            else
+                color_echo "$RED" "Error: Too many positional arguments"
+                exit 1
+            fi
+            shift
+            ;;
+    esac
+done
+
+# Set default directory if not specified
+if [[ "$target_dir" == "." ]]; then
+    target_dir="."
 fi
 
 # Check ImageMagick availability upfront (cross-platform)
@@ -226,7 +267,7 @@ for file in *.jpg *.jpeg *.JPG *.JPEG; do
     filename=$(basename "$file")
     extension="${filename##*.}"
     name="${filename%.*}"
-    output_file="${output_dir}/${name}${OUTPUT_SUFFIX}.${extension}"
+    output_file="${output_dir}/${name}${custom_suffix}.${extension}"
     
     # Check if output file already exists
     if [[ -e "$output_file" ]]; then
