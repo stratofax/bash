@@ -4,6 +4,9 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
 
 ## Repository Structure
 
+- `ai/` - AI processing tools
+  - `wav_2_txt.sh` - Transcribes .wav files using Whisper with timing metrics
+
 - `cfg/` - System configuration utilities
   - `install_dotfiles.sh` - Sets up dotfiles on a new computer
   - `install_source_code_pro.sh` - Installs Adobe's Source Code Pro font
@@ -16,9 +19,15 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
     - Command-line options for customization
   - `daylog.sh` - Creates and manages daily log entries
   - `daylog_cfg.sh` - Configures daylog settings
+  - `extract_tasks.sh` - Extracts task items from markdown files
+  - `git_mv_to_month.sh` - Git operations for monthly organization
+  - `yyyy_mm.sh` - Date formatting utility
 
 - `files/` - File management utilities
   - `savefiletree.sh` - Generates directory trees and consolidates file contents
+  - `move_list.sh` - Batch file moving utility
+  - `recurse_subdirs.sh` - Recursive subdirectory operations
+  - `remove_thumbs.sh` - Removes thumbnail files
 
 - `git/` - Git automation scripts
   - `create_github_repo.sh` - Sets up new GitHub repositories
@@ -31,6 +40,11 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
 
 - `linux/` - Linux-specific utilities
   - `toggle_touchscreen.sh` - Interactive script to enable/disable touchscreen input
+
+- `net/` - Network utilities
+  - `dns_test.sh` - DNS lookup testing script
+  - `dig_test.sh` - DNS lookup using dig command
+  - `ns_test.sh` - Nameserver testing utility
 
 - `updates/` - System update utilities
   - `update_servers.sh` - Automates server updates
@@ -81,6 +95,21 @@ Each script includes help information available via the `-h` or `--help` flag. H
 ```bash
 # Generate a directory tree and file contents report
 ./files/savefiletree.sh -d /path/to/directory
+```
+
+### AI Processing
+```bash
+# Transcribe all .wav files in current directory
+./ai/wav_2_txt.sh
+```
+
+### Network Testing
+```bash
+# Test DNS resolution
+./net/dns_test.sh example.com
+
+# Test with specific nameserver
+./net/ns_test.sh 8.8.8.8 example.com
 ```
 
 ### Linux Utilities
