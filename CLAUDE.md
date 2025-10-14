@@ -82,4 +82,71 @@ All scripts follow these patterns:
 ### Git Management
 - Scripts automatically handle git operations where applicable
 - Use provided git utilities for repository synchronization
-- Ensure scripts work across different git repository states
+- Ensure scripts work across different git repository states# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Repository Overview
+
+This is a collection of cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) that automate common development tasks, manage git repositories, and maintain system configurations.
+
+## Architecture
+
+### Core Structure
+- **`lib/`** - Shared utilities that other scripts depend on
+  - `bash-template.sh` - Standard template with strict mode (`set -euo pipefail`)
+  - `colors.sh` - Terminal color definitions and `color_echo()` function
+- **Script categories organized by functionality:**
+  - `cfg/` - System configuration utilities
+  - `daylog/` - Daily logging and diary tools with git integration
+  - `files/` - File management utilities
+  - `git/` - Git automation scripts
+  - `linux/` - Linux-specific utilities
+  - `net/` - Network and DNS testing utilities
+  - `ai/` - AI-related tools (whisper transcription)
+  - `updates/` - System update utilities
+
+### Common Patterns
+- All scripts use bash strict mode: `set -euo pipefail`
+- Scripts source `../lib/colors.sh` for consistent terminal output
+- Help functionality via `-h` or `--help` flags
+- Naming convention: `variable_name` (lowercase with underscores), `CONSTANT_NAME` (uppercase), `FunctionName` (uppercase functions)
+
+### Key Components
+- **diary.sh** (`daylog/diary.sh`) - Interactive diary tool with git integration, custom editor support, and automatic date handling
+- **colors.sh** (`lib/colors.sh`) - Provides color constants and `color_echo()` function used throughout scripts
+- **bash-template.sh** (`lib/bash-template.sh`) - Standard starting template for new bash scripts
+
+## Development Workflow
+
+This repository contains only bash scripts - no build, test, or lint commands are configured. Scripts are designed to be:
+- Executable directly from their directories
+- Added to PATH for system-wide usage
+- Self-contained with built-in help via `--help`
+
+## Usage Patterns
+
+Scripts follow consistent CLI patterns:
+- `-h, --help` for help
+- `-v, --version` for version info
+- `-c, --config` for configuration display (where applicable)
+
+Example usage:
+```bash
+# Run script with help
+./daylog/diary.sh --help
+
+# Configure and run daylog
+./daylog/daylog_cfg.sh
+./daylog/daylog.sh
+
+# Git repository management
+./git/syncall.sh
+```
+
+## Dependencies
+
+- Bash 4.0+ required
+- Standard Unix utilities (find, tree, etc.)
+- Git for repository management scripts
+- Scripts handle cross-platform compatibility (Linux/Mac/Windows WSL)
