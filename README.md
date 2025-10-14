@@ -48,9 +48,6 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
   - `dig_test.sh` - DNS lookup using dig command
   - `ns_test.sh` - Nameserver testing utility
 
-- `updates/` - System update utilities
-  - `update_servers.sh` - Automates server updates
-
 ## Prerequisites
 
 - Bash shell (version 4.0 or higher recommended)
@@ -61,12 +58,16 @@ Cross-platform bash scripts for Linux, Mac, and Windows (via WSL or Git Bash) co
 
 ## Installation
 
-1. Clone the repository:
+### Clone the repository
+
 ```bash
 git clone https://github.com/stratofax/bash.git
 ```
 
-2. Add the script directories to your PATH or create symlinks to the scripts you want to use:
+### Add the script directories to your PATH
+
+Or create symlinks to the scripts you want to use.
+
 ```bash
 # Example: Add to PATH in your .bashrc or .bash_profile
 export PATH="$PATH:/path/to/bash/bin"
@@ -77,6 +78,7 @@ export PATH="$PATH:/path/to/bash/bin"
 Each script includes help information available via the `-h` or `--help` flag. Here are some common use cases:
 
 ### Managing Daily Logs
+
 ```bash
 # Configure daylog settings
 ./daylog/daylog_cfg.sh
@@ -86,6 +88,7 @@ Each script includes help information available via the `-h` or `--help` flag. H
 ```
 
 ### Git Repository Management
+
 ```bash
 # Sync all git repositories
 ./git/syncall.sh
@@ -95,6 +98,7 @@ Each script includes help information available via the `-h` or `--help` flag. H
 ```
 
 ### File Management
+
 ```bash
 # Generate a directory tree and file contents report
 ./files/savefiletree.sh -d /path/to/directory
@@ -113,6 +117,7 @@ Each script includes help information available via the `-h` or `--help` flag. H
 ```
 
 ### Image Processing
+
 ```bash
 # Resize JPEG images while maintaining aspect ratio
 ./files/resize_images.sh ~/photos                    # Default: 900px height, 85% quality
@@ -130,12 +135,14 @@ Each script includes help information available via the `-h` or `--help` flag. H
 ```
 
 ### AI Processing
+
 ```bash
 # Transcribe all .wav files in current directory
 ./ai/wav_2_txt.sh
 ```
 
 ### Network Testing
+
 ```bash
 # Test DNS resolution
 ./net/dns_test.sh example.com
@@ -145,9 +152,34 @@ Each script includes help information available via the `-h` or `--help` flag. H
 ```
 
 ### Linux Utilities
+
 ```bash
 # Toggle touchscreen on/off
 ./linux/toggle_touchscreen.sh
+```
+
+### SSH
+
+start-agent.sh -- start ssh-agent and load your SSH key
+
+This script starts the `ssh-agent` if it's not already running and automatically loads your SSH key. This is particularly useful when connecting to your Mac via a remote session (e.g., SSH), where the ssh-agent may not be running.
+
+**Important:** This script should be **sourced** (not executed) to ensure the ssh-agent environment variables are set in your current shell:
+
+```bash
+source path/to/bash/ssh/start-agent.sh
+```
+
+By default, the script loads `~/.ssh/id_ed25519`. You can specify a different key name using the `-n` option:
+
+```bash
+source path/to/bash/ssh/start-agent.sh -n id_rsa
+```
+
+Consider adding an alias to the remote computer to make this easier:
+
+```bash
+alias ssha='source path/to/bash/ssh/start-agent.sh'
 ```
 
 ## Coding Style
@@ -156,10 +188,10 @@ This repository follows the [Unofficial Shell Scripting Stylesheet](https://tldp
 
 ### Naming Conventions
 
-* `variable_name` - Lower case with underscores for variables
-* `CONSTANT_NAME` - Upper case for constants
-* `E_ERROR_CODE` - Error codes prefixed with "E_"
-* `FunctionName` - Upper case for function names
+- `variable_name` - Lower case with underscores for variables
+- `CONSTANT_NAME` - Upper case for constants
+- `E_ERROR_CODE` - Error codes prefixed with "E_"
+- `FunctionName` - Upper case for function names
 
 ## Contributing
 
