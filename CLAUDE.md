@@ -74,31 +74,6 @@ All scripts follow these patterns:
 ### updates/ - System Update Automation
 - System update utilities
 
-## Troubleshooting Reminders
-
-### Dead mouse pointer / touchpad (baby-dell, Dell Inspiron 3185)
-
-**Run `linux/fix_touchpad.sh` first. Do not re-diagnose this from scratch.**
-
-```bash
-./linux/fix_touchpad.sh --check   # report status, change nothing
-./linux/fix_touchpad.sh           # reload the driver, then re-probe
-```
-
-On baby-dell the touchpad is an I2C HID device (`DELL087F:00 04F3:3082`) that
-intermittently fails to probe at boot with error `-121` (EREMOTEIO). It failed on
-8 of 12 boots sampled between 2026-08-22 and 2026-09-01.
-
-The trap: a phantom `ETPS/2 Elantech Touchpad` enumerates on *every* boot, even when
-the real touchpad is dead. So `xinput list` shows an enabled touchpad and the XFCE
-pointer settings look correct while the pointer does not work. Do not trust
-`xinput list` to diagnose this; check the kernel's device list instead, which is what
-`fix_touchpad.sh` does.
-
-If the reload does not recover it, cold power cycle: shut down, hold the power button
-for ~30 seconds, then boot. BIOS 1.5.0 (August 2022) is the final release for this
-model, so no firmware fix is pending.
-
 ## Development Commands
 
 ### Code Quality
