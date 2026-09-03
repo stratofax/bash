@@ -3,7 +3,7 @@
 #######################################
 # fix_touchpad.sh
 #
-# Recover an I2C HID touchpad that failed to probe at boot.
+# Recover an I2C HID touchpad that is missing or has stopped working.
 #
 # Some laptops (the Dell Inspiron 3185 in particular) attach their
 # touchpad to the I2C bus via the i2c_hid_acpi driver. That probe
@@ -15,6 +15,12 @@
 # `xinput list` even when the real touchpad is dead, so a touchpad
 # listed by xinput is NOT proof that the touchpad works. This
 # script checks the kernel's own device list instead.
+#
+# Nor is the kernel's device list proof on its own: the touchpad can
+# enumerate normally at boot and then drop off the I2C bus minutes
+# later, leaving a stale device node behind. So the device list
+# answers "is it there?" and the kernel log answers "does it still
+# work?". Both have to agree before we call the touchpad healthy.
 #######################################
 
 # turn on output for debugging
@@ -37,6 +43,12 @@ readonly E_STILL_MISSING=4
 
 readonly TOUCHPAD_MODULE="i2c_hid_acpi"
 readonly INPUT_DEVICES="/proc/bus/input/devices"
+# Scopes kernel messages to this touchpad. The ACPI ID appears both in
+# the driver's error lines ("i2c-DELL087F:00") and in the lines logged
+# when the device registers an input or a HID driver binds to it, so one
+# grep collects the whole story for this device and nothing else --
+# notably not the ELAN touchscreen, which shares the 04F3 vendor ID.
+readonly TOUCHPAD_ACPI_ID="DELL087F"
 # The re-probe is not instant; it took about 6 seconds on the Inspiron 3185.
 readonly WAIT_SECONDS=15
 
@@ -44,8 +56,9 @@ ShowHelp () {
     cat <<HELP_EOF
 Usage: $(basename "$0") [-c|--check] [-h|--help]
 
-Recover an I2C HID touchpad that failed to probe at boot by
-reloading the ${TOUCHPAD_MODULE} kernel module.
+Recover an I2C HID touchpad that failed to probe at boot, or that
+probed and later dropped off the bus, by reloading the
+${TOUCHPAD_MODULE} kernel module.
 
 Options:
   -c, --check   Report touchpad status only; make no changes
@@ -56,7 +69,7 @@ Exit codes:
   ${E_BAD_OPTION}                  unknown option
   ${E_NO_MODULE}                  ${TOUCHPAD_MODULE} not available on this system
   ${E_RELOAD_FAILED}                  module reload failed
-  ${E_STILL_MISSING}                  touchpad still missing after the reload
+  ${E_STILL_MISSING}                  touchpad still not working after the reload
 
 If this script does not recover the touchpad, power the machine
 right down, hold the power button for ~30 seconds, then boot.
@@ -89,6 +102,30 @@ FindTouchpad () {
         }' "${INPUT_DEVICES}"
 }
 
+# Report whether the kernel's last word on the touchpad was an error.
+#
+# A -121 is not by itself proof of a dead touchpad. The driver retries,
+# and a failed report fetch is often followed moments later by a
+# successful bind, which means something recovered it. What matters is
+# which came last. Kernel messages are chronological, so the final line
+# mentioning this device tells us the state it was left in: a "failed"
+# line with nothing after it means nothing recovered the device, while
+# a bind or input-registration line means it came back.
+#
+# Returns 1 when journalctl is unavailable, so a system without it
+# falls back to the device-list check alone rather than crying wolf.
+TouchpadFailedSinceLastProbe () {
+    if ! command -v journalctl > /dev/null 2>&1; then
+        return 1
+    fi
+    local last
+    last="$(journalctl -k -b 0 2>/dev/null | grep "${TOUCHPAD_ACPI_ID}" | tail -1 || true)"
+    case "${last}" in
+        *failed*) return 0 ;;
+        *)        return 1 ;;
+    esac
+}
+
 # Run a command as root, asking for sudo only when we need it.
 RunPrivileged () {
     if [ "${EUID}" -eq 0 ]; then
@@ -104,9 +141,9 @@ ShowKernelErrors () {
         return 0
     fi
     local errors
-    errors="$(journalctl -k -b 0 2>/dev/null | grep -i "i2c_hid" | tail -5 || true)"
+    errors="$(journalctl -k -b 0 2>/dev/null | grep "${TOUCHPAD_ACPI_ID}" | tail -5 || true)"
     if [ -n "${errors}" ]; then
-        color_echo "${YELLOW}" "Recent i2c_hid messages from this boot:"
+        color_echo "${YELLOW}" "Recent kernel messages for this touchpad:"
         echo "${errors}"
     fi
 }
@@ -136,12 +173,17 @@ esac
 
 touchpad_name="$(FindTouchpad)"
 
-if [ -n "${touchpad_name}" ]; then
+if [ -n "${touchpad_name}" ] && ! TouchpadFailedSinceLastProbe; then
     color_echo "${GREEN}" "Touchpad is present: ${touchpad_name}"
     exit 0
 fi
 
-color_echo "${RED}" "No I2C touchpad found -- it failed to probe."
+if [ -n "${touchpad_name}" ]; then
+    color_echo "${RED}" "Touchpad is present but not responding: ${touchpad_name}"
+    color_echo "${YELLOW}" "It enumerated, then dropped off the bus -- the device node is stale."
+else
+    color_echo "${RED}" "No I2C touchpad found -- it failed to probe."
+fi
 ShowKernelErrors
 
 if [ "${check_only}" = true ]; then
@@ -170,13 +212,13 @@ color_echo "${CYAN}" "Waiting up to ${WAIT_SECONDS}s for the touchpad to re-prob
 for (( second = 1; second <= WAIT_SECONDS; second++ )); do
     sleep 1
     touchpad_name="$(FindTouchpad)"
-    if [ -n "${touchpad_name}" ]; then
+    if [ -n "${touchpad_name}" ] && ! TouchpadFailedSinceLastProbe; then
         color_echo "${GREEN}" "Touchpad recovered after ${second}s: ${touchpad_name}"
         exit 0
     fi
 done
 
-color_echo "${RED}" "Touchpad still missing after ${WAIT_SECONDS}s."
+color_echo "${RED}" "Touchpad still not working after ${WAIT_SECONDS}s."
 ShowKernelErrors
 color_echo "${YELLOW}" "Try a cold power cycle: shut down, hold the power button ~30s, then boot."
 exit "${E_STILL_MISSING}"
