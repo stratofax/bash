@@ -63,7 +63,6 @@ All scripts follow these patterns:
 
 ### linux/ - Linux-Specific Utilities
 - `toggle_touchscreen.sh` - Interactive touchscreen toggle
-- `fix_touchpad.sh` - Recover an I2C HID touchpad that failed to probe at boot
 
 ### ai/ - AI Processing Tools
 - `wav_2_txt.sh` - Whisper-based audio transcription with timing metrics
